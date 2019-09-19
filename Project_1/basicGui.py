@@ -90,7 +90,7 @@ class Ui_Form(QtWidgets.QWidget):
 
 if __name__ == '__main__':
     db = 'eid_proj_1'
-    tableName = 'temp_hum'
+    tableName = 'testable5'
 
     app = QtWidgets.QApplication(sys.argv)
     ex = Ui_Form(db, tableName)
