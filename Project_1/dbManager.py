@@ -106,12 +106,15 @@ class DatabaseUtility:
 ##===============================================
 
 
-# if __name__ == '__main__':
-# 	db = 'eid_proj_1'
-# 	tableName = 'testable2'
+if __name__ == '__main__':
+	db = 'eid_proj_1'
+	tableName = 'testable2'
 
-# 	dbu = DatabaseUtility(db, tableName)
+	dbu = DatabaseUtility(db, tableName)
 
-# 	dbu.AddEntryToTable (34.41, 40.99)
-# 	print (dbu.getTemperature())
-# 	print (dbu.getHumidity())
+	dbu.AddEntryToTable (34.41, 40.99)
+	print (dbu.getLatestTemperatureValue())
+	print (dbu.getLatestHumidityValue())
+
+	print (dbu.getLastTenTemperatureValues())
+	print (dbu.getLastTenHumidityValues())

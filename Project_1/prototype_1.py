@@ -9,6 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import dbManager, sys
 import Adafruit_DHT
+import pyqtgraph as pg
 
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4
@@ -113,8 +114,11 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         #Plot Graph of last 10 values of humidity or temperature
-        self.graphicsView = QtWidgets.QGraphicsView(TemperatureAndHumidity)
+
+        #self.graphicsView = QtWidgets.QGraphicsView(TemperatureAndHumidity)
+        self.graphicsView = pg.PlotWidget(TemperatureAndHumidity)
         self.graphicsView.setObjectName("graphicsView")
+
         self.horizontalLayout_5.addWidget(self.graphicsView)
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
@@ -224,9 +228,22 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
                     self.dbu.AddEntryToTable(temperature, humidity)
 
                     # retrieve latest value from db
-                    temperatureFromDB = self.dbu.getTemperature()
-                    humidityFromDB = self.dbu.getHumidity()
+                    temperatureFromDB = self.dbu.getLatestTemperatureValue()
+                    humidityFromDB = self.dbu.getLatestHumidityValue()
 
+                    sqlTempTenArray = self.dbu.getLastTenTemperatureValues()
+                    sqlHumTenArray = self.dbu.getLastTenHumidityValues()
+                    # print(array2[0])
+
+                    tempArray_C = [0,0,0,0,0,0,0,0,0,0]
+                    tempArray_F = [0,0,0,0,0,0,0,0,0,0]
+                    humArray = [0,0,0,0,0,0,0,0,0,0]
+
+                    for i in range(10):
+                        tempArray_C[9-i] = sqlTempTenArray[i][0]
+                        humArray[9-i] = sqlHumTenArray[i][0]
+
+                    self.graphicsView.plot(tempArray_C)
                     print(temperatureFromDB[0][0])
                     print(humidityFromDB[0][0])
                     
