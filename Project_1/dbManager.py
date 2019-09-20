@@ -97,6 +97,9 @@ class DatabaseUtility:
 		cmd += " VALUES ('%s', '%s', '%f', '%f');" % (date1, time, temperature, humidity)
 		self.RunCommand(cmd)
 
+	def DropTable(self):
+		self.RunCommand("DROP TABLE %s" % self.tableName)
+
 	def __del__(self):
 		self.cnx.commit()
 		self.cursor.close()
@@ -106,15 +109,15 @@ class DatabaseUtility:
 ##===============================================
 
 
-if __name__ == '__main__':
-	db = 'eid_proj_1'
-	tableName = 'testable2'
+# if __name__ == '__main__':
+# 	db = 'eid_proj_1'
+# 	tableName = 'testable2'
 
-	dbu = DatabaseUtility(db, tableName)
+# 	dbu = DatabaseUtility(db, tableName)
 
-	dbu.AddEntryToTable (34.41, 40.99)
-	print (dbu.getLatestTemperatureValue())
-	print (dbu.getLatestHumidityValue())
+# 	dbu.AddEntryToTable (34.41, 40.99)
+# 	print (dbu.getLatestTemperatureValue())
+# 	print (dbu.getLatestHumidityValue())
 
-	print (dbu.getLastTenTemperatureValues())
-	print (dbu.getLastTenHumidityValues())
+# 	print (dbu.getLastTenTemperatureValues())
+# 	print (dbu.getLastTenHumidityValues())

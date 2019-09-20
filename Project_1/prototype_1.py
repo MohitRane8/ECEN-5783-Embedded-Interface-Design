@@ -126,10 +126,12 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
         #Push Button to get Graph of temperature
         self.getTempGraphButton = QtWidgets.QPushButton(TemperatureAndHumidity)
         self.getTempGraphButton.setObjectName("getTempGraphButton")
+        self.getTempGraphButton.clicked.connect(self.get_temp_graph)
         self.horizontalLayout_6.addWidget(self.getTempGraphButton)
         #Push Button to get Graph of humidity
         self.getHumGraphButton = QtWidgets.QPushButton(TemperatureAndHumidity)
         self.getHumGraphButton.setObjectName("getHumGraphButton")
+        self.getHumGraphButton.clicked.connect(self.get_humidity_graph)
         self.horizontalLayout_6.addWidget(self.getHumGraphButton)
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
@@ -186,96 +188,96 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
         #self.getLatestValuesButton.clicked.connect(self.get_latest_values)
 
     def get_latest_values(self):
-            global flag
-            _translate = QtCore.QCoreApplication.translate
-            humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
-            
-            if humidity is not None and temperature is not None:
-                    formated_temperature = '{0:0.1f}'.format(temperature)       #Format Temperature up to 1 digit precision
-                    formated_humidity = '{0:0.1f}%'.format(humidity)            #Format Humidity up to 1 digit precision
-                    current_time = QtCore.QDateTime.currentDateTime().toString()
-                    if flag == 0:
-                        formated_temperature_C = formated_temperature
-                        self.tempLatestValue.setText(_translate("MainWindow",formated_temperature_C))
-                        self.humLatestValue.setText(_translate("MainWindow",formated_humidity))
-                        self.timeLatestValue.setText(_translate("MainWindow",current_time))
-                        print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_C), humidity))
-                        print("TimeStamp:",current_time)
+        global flag
+        _translate = QtCore.QCoreApplication.translate
+        humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+        
+        if humidity is not None and temperature is not None:
+            formated_temperature = '{0:0.1f}'.format(temperature)       #Format Temperature up to 1 digit precision
+            formated_humidity = '{0:0.1f}%'.format(humidity)            #Format Humidity up to 1 digit precision
+            current_time = QtCore.QDateTime.currentDateTime().toString()
+            if flag == 0:
+                formated_temperature_C = formated_temperature
+                self.tempLatestValue.setText(_translate("MainWindow",formated_temperature_C))
+                self.humLatestValue.setText(_translate("MainWindow",formated_humidity))
+                self.timeLatestValue.setText(_translate("MainWindow",current_time))
+                print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_C), humidity))
+                print("TimeStamp:",current_time)
 
 
 
-                    elif flag == 1:
-                        formated_temperature_F = ((float(formated_temperature)*1.8) + 32)
-                        print('{0:0.1f}'.format(formated_temperature_F))
-                        self.tempLatestValue.setText(_translate("MainWindow",str('{0:0.1f}'.format(formated_temperature_F))))
-                        self.humLatestValue.setText(_translate("MainWindow",formated_humidity))
-                        self.timeLatestValue.setText(_translate("MainWindow",current_time))
-                        print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_F), humidity))
-                        print("TimeStamp:",current_time)
+            elif flag == 1:
+                formated_temperature_F = ((float(formated_temperature)*1.8) + 32)
+                print('{0:0.1f}'.format(formated_temperature_F))
+                self.tempLatestValue.setText(_translate("MainWindow",str('{0:0.1f}'.format(formated_temperature_F))))
+                self.humLatestValue.setText(_translate("MainWindow",formated_humidity))
+                self.timeLatestValue.setText(_translate("MainWindow",current_time))
+                print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_F), humidity))
+                print("TimeStamp:",current_time)
 
 #                   print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temperature, humidity))
 #                   print("TimeStamp:",current_time)
-            else:
-                    print("Failed to retrieve data from humidity sensor")
+        else:
+            print("Failed to retrieve data from humidity sensor")
 
 
     def get_temp_humidity_value(self):
-            _translate = QtCore.QCoreApplication.translate
-            humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+        # this line required?
+        _translate = QtCore.QCoreApplication.translate
+        humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+        
+        if humidity is not None and temperature is not None:
+            #store temperature and humidity values in database
+            self.dbu.AddEntryToTable(temperature, humidity)
+
+            # retrieve latest value from db
+            # temperatureFromDB = self.dbu.getLatestTemperatureValue()
+            # humidityFromDB = self.dbu.getLatestHumidityValue()
+            # print(temperatureFromDB[0][0])
+            # print(humidityFromDB[0][0])
+
+            # get last 10 values from database
+            # sqlTempTenArray = self.dbu.getLastTenTemperatureValues()
+            # sqlHumTenArray = self.dbu.getLastTenHumidityValues()
+
+            # tempArray_C = [0,0,0,0,0,0,0,0,0,0]
+            # tempArray_F = [0,0,0,0,0,0,0,0,0,0]
+            # humArray = [0,0,0,0,0,0,0,0,0,0]
+
+            # for i in range(10):
+            #     tempArray_C[9-i] = sqlTempTenArray[i][0]
+            #     humArray[9-i] = sqlHumTenArray[i][0]
+
+            # self.graphicsView.plot(tempArray_C)
             
-            if humidity is not None and temperature is not None:
-                    #store temperature and humidity values in database
-                    self.dbu.AddEntryToTable(temperature, humidity)
+            formated_temperature = '{0:0.1f}'.format(temperature)       #Format Temperature up to 1 digit precision
+            formated_humidity = '{0:0.1f}'.format(humidity)            #Format Humidity up to 1 digit precision
+            
+            current_time = QtCore.QDateTime.currentDateTime().toString()
+            if flag == 0:
+                formated_temperature_C = formated_temperature
+                status_line = 'Temp: ' + str(formated_temperature_C) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
+                self.statusLineEdit.setText(_translate("MainWindow",status_line))
+                print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_C), humidity))
+                print("TimeStamp:",current_time)
 
-                    # retrieve latest value from db
-                    temperatureFromDB = self.dbu.getLatestTemperatureValue()
-                    humidityFromDB = self.dbu.getLatestHumidityValue()
+            elif flag == 1:
+                formated_temperature_F = ((float(formated_temperature)*1.8) + 32)
+                status_line = 'Temp: ' + str('{0:0.1f}'.format(formated_temperature_F)) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
+                self.statusLineEdit.setText(_translate("MainWindow",status_line))
+                print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_F), humidity))
+                print("TimeStamp:",current_time)
+  
+                # print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temperature, humidity))
+                # print("TimeStamp:",current_time)
 
-                    sqlTempTenArray = self.dbu.getLastTenTemperatureValues()
-                    sqlHumTenArray = self.dbu.getLastTenHumidityValues()
-                    # print(array2[0])
-
-                    tempArray_C = [0,0,0,0,0,0,0,0,0,0]
-                    tempArray_F = [0,0,0,0,0,0,0,0,0,0]
-                    humArray = [0,0,0,0,0,0,0,0,0,0]
-
-                    for i in range(10):
-                        tempArray_C[9-i] = sqlTempTenArray[i][0]
-                        humArray[9-i] = sqlHumTenArray[i][0]
-
-                    self.graphicsView.plot(tempArray_C)
-                    print(temperatureFromDB[0][0])
-                    print(humidityFromDB[0][0])
-                    
-                    formated_temperature = '{0:0.1f}'.format(temperature)       #Format Temperature up to 1 digit precision
-                    formated_humidity = '{0:0.1f}'.format(humidity)            #Format Humidity up to 1 digit precision
-                    
-                    current_time = QtCore.QDateTime.currentDateTime().toString()
-                    if flag == 0:
-                        formated_temperature_C = formated_temperature
-                        status_line = 'Temp: ' + str(formated_temperature_C) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
-                        self.statusLineEdit.setText(_translate("MainWindow",status_line))
-                        print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_C), humidity))
-                        print("TimeStamp:",current_time)
-
-                    elif flag == 1:
-                        formated_temperature_F = ((float(formated_temperature)*1.8) + 32)
-                        status_line = 'Temp: ' + str('{0:0.1f}'.format(formated_temperature_F)) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
-                        self.statusLineEdit.setText(_translate("MainWindow",status_line))
-                        print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_F), humidity))
-                        print("TimeStamp:",current_time)
-
-                     
-#                    print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(temperature, humidity))
-#                    print("TimeStamp:",current_time)
-
-            else:
-                    formated_temperature = '-'
-                    formated_humidity = '-'
-                    current_time = QtCore.QDateTime.currentDateTime().toString()
-                    status_line = 'Temp: ' + formated_temperature + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Disconnected'
-                    self.statusLineEdit.setText(_translate("MainWindow",status_line))
-                    print("Failed to retrieve data from humidity sensor")
+        else:
+            formated_temperature = '-'
+            formated_humidity = '-'
+            current_time = QtCore.QDateTime.currentDateTime().toString()
+            status_line = 'Temp: ' + formated_temperature + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Disconnected'
+            self.statusLineEdit.setText(_translate("MainWindow",status_line))
+            print("Failed to retrieve data from humidity sensor")
 
     # Flag = 0 (Temperature is in C)
     # Flag = 1 (Temperature is in F)
@@ -292,14 +294,49 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             print("Temperature will now be displayed in C")
 
     def timerEvent(self):  
-            global time
-            global count
-            if count <= 30:
-                    self.time = self.time.addSecs(15)
-                    self.get_temp_humidity_value()
-                    count = count + 1
-            else:
-                    sys.exit()
+        global time
+        global count
+        if count <= 30:
+            self.time = self.time.addSecs(15)
+            self.get_temp_humidity_value()
+            count = count + 1
+        else:
+            self.sysExit()
+
+    def get_temp_graph(self):
+        self.graphicsView.clear()
+
+        sqlTempTenArray = self.dbu.getLastTenTemperatureValues()
+        
+        tempArray_C = [0,0,0,0,0,0,0,0,0,0]
+        tempArray_F = [0,0,0,0,0,0,0,0,0,0]
+
+        for i in range(10):
+            tempArray_C[9-i] = sqlTempTenArray[i][0]
+
+        if flag == 0:
+            self.graphicsView.plot(tempArray_C)       
+        else:
+            for i in range(10):
+                tempArray_F[i] = tempArray_C[i] * (1.8) + 32
+
+            self.graphicsView.plot(tempArray_F)
+
+    def get_humidity_graph(self):
+        self.graphicsView.clear()
+
+        sqlHumTenArray = self.dbu.getLastTenHumidityValues()
+        humArray = [0,0,0,0,0,0,0,0,0,0]
+
+        for i in range(10):
+            humArray[9-i] = sqlHumTenArray[i][0]
+
+        self.graphicsView.plot(humArray)    
+
+    def sysExit(self):
+        self.dbu.DropTable()
+        sys.exit()
+
 
 if __name__ == "__main__":
     db = 'eid_proj_1'
@@ -311,4 +348,4 @@ if __name__ == "__main__":
     ui.setupUi(TemperatureAndHumidity)
     TemperatureAndHumidity.show()
     sys.exit(app.exec_())
-
+    ui.sysExit()
