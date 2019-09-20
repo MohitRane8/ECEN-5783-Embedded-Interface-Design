@@ -55,13 +55,26 @@ class DatabaseUtility:
 	# def GetColumns(self):
 	# 	return self.RunCommand("SHOW COLUMNS FROM %s;" % self.tableName)
 
-	def getTemperature(self):
+	# get latest temperature value
+	def getLatestTemperatureValue(self):
 		# SELECT temperature FROM testable2 ORDER BY ID DESC LIMIT 1;
 		return self.RunCommand("SELECT temperature FROM %s ORDER BY ID DESC LIMIT 1;" % self.tableName)
 
-	def getHumidity(self):
+	# get latest humidity value
+	def getLatestHumidityValue(self):
 		# SELECT humidity FROM testable2 ORDER BY ID DESC LIMIT 1;
 		return self.RunCommand("SELECT humidity FROM %s ORDER BY ID DESC LIMIT 1;" % self.tableName)
+
+	# get last 10 temperature values
+	def getLastTenTemperatureValues(self):
+		# SELECT temperature FROM testable2 ORDER BY ID DESC LIMIT 1;
+		return self.RunCommand("SELECT temperature FROM %s ORDER BY ID DESC LIMIT 10;" % self.tableName)
+
+	# get last 10 humidity values
+	def getLastTenHumidityValues(self):
+		# SELECT humidity FROM testable2 ORDER BY ID DESC LIMIT 1;
+		return self.RunCommand("SELECT humidity FROM %s ORDER BY ID DESC LIMIT 10;" % self.tableName)
+
 
 	def RunCommand(self, cmd):
 		print ("RUNNING COMMAND: " + cmd)
