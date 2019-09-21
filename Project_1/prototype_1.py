@@ -15,6 +15,9 @@ DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4
 count = 1
 flag = 0    #Temperature in C
+default_temp_value_C = 25
+default_temp_value_F = 77
+default_hum_value = 50
 
 
 class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
@@ -46,6 +49,7 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
         #Set Threshold Values for Temperature
         self.setTempThresh = QtWidgets.QDoubleSpinBox(TemperatureAndHumidity)
         self.setTempThresh.setObjectName("setTempThresh")
+        self.setTempThresh.setValue(default_temp_value_C)
         self.horizontalLayout.addWidget(self.setTempThresh)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
@@ -65,6 +69,7 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
         #Set Threshold for Humidity
         self.setHumThresh = QtWidgets.QDoubleSpinBox(TemperatureAndHumidity)
         self.setHumThresh.setObjectName("setHumThresh")
+        self.setHumThresh.setValue(default_hum_value)
         self.horizontalLayout_2.addWidget(self.setHumThresh)
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
@@ -185,7 +190,7 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
         self.getHumGraphButton.setText(_translate("TemperatureAndHumidity", "Humidity Graph"))
         self.alarmLabel.setText(_translate("TemperatureAndHumidity", "Alarm Message"))
         self.CFButton.setText(_translate("TemperatureAndHumidity", "Celsius/Fahrenheit"))
-        #self.getLatestValuesButton.clicked.connect(self.get_latest_values)
+        
 
     def get_latest_values(self):
         global flag
@@ -224,31 +229,22 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
     def get_temp_humidity_value(self):
         # this line required?
         _translate = QtCore.QCoreApplication.translate
-        humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+        humidity,temperature = Adafruit_DHT.read(DHT_SENSOR,DHT_PIN)
+
+        temp_thresh = self.setTempThresh.value()
+        hum_thresh  = self.setHumThresh.value()
+
+        if humidity is None and temperature is None:
+            for i in range(0,10):
+                humidity,temperature = Adafruit_DHT.read(DHT_SENSOR,DHT_PIN)
+                if humidity is not None and temperature is not None:
+                    print("Got Temperature, Breaking Loop")
+                    break
+
         
         if humidity is not None and temperature is not None:
             #store temperature and humidity values in database
             self.dbu.AddEntryToTable(temperature, humidity)
-
-            # retrieve latest value from db
-            # temperatureFromDB = self.dbu.getLatestTemperatureValue()
-            # humidityFromDB = self.dbu.getLatestHumidityValue()
-            # print(temperatureFromDB[0][0])
-            # print(humidityFromDB[0][0])
-
-            # get last 10 values from database
-            # sqlTempTenArray = self.dbu.getLastTenTemperatureValues()
-            # sqlHumTenArray = self.dbu.getLastTenHumidityValues()
-
-            # tempArray_C = [0,0,0,0,0,0,0,0,0,0]
-            # tempArray_F = [0,0,0,0,0,0,0,0,0,0]
-            # humArray = [0,0,0,0,0,0,0,0,0,0]
-
-            # for i in range(10):
-            #     tempArray_C[9-i] = sqlTempTenArray[i][0]
-            #     humArray[9-i] = sqlHumTenArray[i][0]
-
-            # self.graphicsView.plot(tempArray_C)
             
             formated_temperature = '{0:0.1f}'.format(temperature)       #Format Temperature up to 1 digit precision
             formated_humidity = '{0:0.1f}'.format(humidity)            #Format Humidity up to 1 digit precision
@@ -256,8 +252,18 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             current_time = QtCore.QDateTime.currentDateTime().toString()
             if flag == 0:
                 formated_temperature_C = formated_temperature
+                if (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) <= hum_thresh):
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Cold and Dry"))
+                elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) <= hum_thresh):
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Hot and Dry"))
+                elif (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) >= hum_thresh):
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Cold and Humid"))
+                elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) >= hum_thresh):
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Hot and Humid"))
+
                 status_line = 'Temp: ' + str(formated_temperature_C) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
                 self.statusLineEdit.setText(_translate("MainWindow",status_line))
+                print(count)
                 print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_C), humidity))
                 print("TimeStamp:",current_time)
 
@@ -265,6 +271,7 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
                 formated_temperature_F = ((float(formated_temperature)*1.8) + 32)
                 status_line = 'Temp: ' + str('{0:0.1f}'.format(formated_temperature_F)) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
                 self.statusLineEdit.setText(_translate("MainWindow",status_line))
+                print(count)
                 print("Temp={0:0.1f}*C  Humidity={1:0.1f}%".format(float(formated_temperature_F), humidity))
                 print("TimeStamp:",current_time)
   
