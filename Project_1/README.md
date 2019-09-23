@@ -4,7 +4,8 @@
     Mohit Rane
 ## BRIEF OVERVIEW OF THE PROJECT
     Temperature and Humidity monitoring system using DHT22 sensor
-    The project aims at demonstrating a rapid prototype development of a temperature and humidity monitoring system. The project makes use     of various tools listed below:
+    The project aims at demonstrating a rapid prototype development of a temperature and humidity monitoring
+    system. The project makes use of various tools listed below:
     1) Pyqt5 for GUI development
     2) MySQL for database management
     
