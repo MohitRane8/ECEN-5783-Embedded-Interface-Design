@@ -3,6 +3,8 @@
 #Project Members: Om Raheja & Mohit Rane
 #Embedded Interface Design Project 1
 #Temperature and Humidity monitoring system
+# Referred to the following link for reading DHT values
+# https://www.youtube.com/watch?v=2TibG64zLeA
 
 # -*- coding: utf-8 -*-
 

@@ -1,5 +1,13 @@
 #!/usr/bin/python3
 
+# Author_Name: Mohit Rane
+#Date: 22 September 2019
+#Project Members: Om Raheja & Mohit Rane
+#Embedded Interface Design Project 1
+#Temperature and Humidity monitoring system
+# Referred to Trevor Payne youtube video as a reference for this code
+# https://www.youtube.com/watch?v=2TibG64zLeA
+
 import mysql.connector
 from mysql.connector import errorcode
 from datetime import datetime
@@ -11,8 +19,7 @@ class DatabaseUtility:
 		self.db = database
 		self.tableName = tableName
 
-		# f = open('C:\\Users\\The_Captain\\Desktop\\TPayne Experience\\_Episodes\\_LetsLearn\\026_LLP__SQL_Databases\\password.txt', 'r')
-		# p = f.read(); f.close();
+		# providing username and password for mysql
 		self.cnx = mysql.connector.connect(user = 'eiduser',
 									password = 'beboulder',
 									host = '127.0.0.1')
@@ -21,6 +28,7 @@ class DatabaseUtility:
 		self.ConnectToDatabase()
 		self.CreateTable()
 		
+	# establish connection to database
 	def ConnectToDatabase(self):
 		try:
 			self.cnx.database = self.db
@@ -31,12 +39,14 @@ class DatabaseUtility:
 			else:
 				print(err.msg)
 
+	# create a database
 	def CreateDatabase(self):
 		try:
 			self.RunCommand("CREATE DATABASE %s DEFAULT CHARACTER SET 'utf8';" %self.db)
 		except mysql.connector.Error as err:
 			print("Failed creating database: {}".format(err))
 
+	# create table in database if ti does not exist
 	def CreateTable(self):
 		cmd = (" CREATE TABLE IF NOT EXISTS " + self.tableName + " ("
 			" `ID` int(5) NOT NULL AUTO_INCREMENT,"
@@ -48,34 +58,23 @@ class DatabaseUtility:
 			") ENGINE=InnoDB;")
 		self.RunCommand(cmd)
 
-	# def GetTable(self):
-	# 	self.CreateTable()
-	# 	return self.RunCommand("SELECT * FROM %s;" % self.tableName)
-
-	# def GetColumns(self):
-	# 	return self.RunCommand("SHOW COLUMNS FROM %s;" % self.tableName)
-
 	# get latest temperature value
 	def getLatestTemperatureValue(self):
-		# SELECT temperature FROM testable2 ORDER BY ID DESC LIMIT 1;
 		return self.RunCommand("SELECT temperature FROM %s ORDER BY ID DESC LIMIT 1;" % self.tableName)
 
 	# get latest humidity value
 	def getLatestHumidityValue(self):
-		# SELECT humidity FROM testable2 ORDER BY ID DESC LIMIT 1;
 		return self.RunCommand("SELECT humidity FROM %s ORDER BY ID DESC LIMIT 1;" % self.tableName)
 
 	# get last 10 temperature values
 	def getLastTenTemperatureValues(self):
-		# SELECT temperature FROM testable2 ORDER BY ID DESC LIMIT 1;
 		return self.RunCommand("SELECT temperature FROM %s ORDER BY ID DESC LIMIT 10;" % self.tableName)
 
 	# get last 10 humidity values
 	def getLastTenHumidityValues(self):
-		# SELECT humidity FROM testable2 ORDER BY ID DESC LIMIT 1;
 		return self.RunCommand("SELECT humidity FROM %s ORDER BY ID DESC LIMIT 10;" % self.tableName)
 
-
+	# method to run command and return appropriate error message
 	def RunCommand(self, cmd):
 		print ("RUNNING COMMAND: " + cmd)
 		try:
@@ -89,6 +88,7 @@ class DatabaseUtility:
 			msg = self.cursor.fetchone()
 		return msg
 
+	# method to add an entry to table
 	def AddEntryToTable(self, temperature, humidity):
 		date1 = datetime.now().strftime("%y-%m-%d")
 		time = datetime.now().strftime("%H:%M")
@@ -97,6 +97,7 @@ class DatabaseUtility:
 		cmd += " VALUES ('%s', '%s', '%f', '%f');" % (date1, time, temperature, humidity)
 		self.RunCommand(cmd)
 
+	# method to remove table from database
 	def DropTable(self):
 		self.RunCommand("DROP TABLE %s" % self.tableName)
 
@@ -106,9 +107,8 @@ class DatabaseUtility:
 		self.cnx.close()
 
 ##===============================================
+#For Debugging purposes
 ##===============================================
-
-
 # if __name__ == '__main__':
 # 	db = 'eid_proj_1'
 # 	tableName = 'testable2'
