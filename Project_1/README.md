@@ -6,7 +6,7 @@
     Temperature and Humidity monitoring system using DHT22 sensor
     The project aims at demonstrating a rapid prototype development of a temperature and humidity monitoring
     system. The project makes use of various tools listed below:
-    1) Pyqt5 for GUI development
+    1) PyQt5 for GUI development
     2) MySQL for database management
     
     Features of the project include:
@@ -24,7 +24,7 @@
        following installed:
        a) Python3
        b) pip
-       c) pyqt5
+       c) PyQt5
        d) MySQL
        This link [https://pimylifeup.com/raspberry-pi-humidity-sensor-dht22/] will help you setup 
        python3 and pip. It also includes a python code to interface the DHT22 sensor with the raspberry pi.

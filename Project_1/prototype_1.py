@@ -5,6 +5,7 @@
 #Temperature and Humidity monitoring system
 # Referred to the following link for reading DHT values
 # https://www.youtube.com/watch?v=2TibG64zLeA
+# http://zetcode.com/gui/pyqt5/datetime/
 
 # -*- coding: utf-8 -*-
 
@@ -276,13 +277,13 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             if flag == 0:
                 formated_temperature_C = formated_temperature
                 if (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) <= hum_thresh):
-                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Cold and Dry"))
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Below Threshold             Humidity: Below Threshold"))
                 elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) <= hum_thresh):
-                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Hot and Dry"))
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Above Threshold             Humidity: Below Threshold"))
                 elif (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) >= hum_thresh):
-                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Cold and Humid"))
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Below Threshold             Humidity: Above Threshold"))
                 elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) >= hum_thresh):
-                    self.alarmMessageLineEdit.setText(_translate("MainWindow","The weather is Hot and Humid"))
+                    self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Above Threshold             Humidity: Above Threshold"))
 
                 status_line = 'Temp: ' + str(formated_temperature_C) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
                 self.statusLineEdit.setText(_translate("MainWindow",status_line))
