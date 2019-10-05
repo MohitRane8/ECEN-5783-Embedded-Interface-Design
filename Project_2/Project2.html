@@ -36,10 +36,11 @@
            
         // Handle incoming websocket message callback
         ws.onmessage = function(evt) {
-		var recv_msg = evt.data;
-		$("#Output_Temperature").val(recv_msg);
-        //log("Message Received: " + evt.data)
-        //alert("message received: " + evt.data);
+		//var recv_msg = evt.data.split(",");
+		var recv_msg = JSON.parse(evt.data);
+		$("#Output_Temperature").val(recv_msg.temp.toFixed(2));
+		$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
+
         };
  
         // Close Websocket callback
@@ -103,12 +104,11 @@
 
 	<label for="Temperature" id="Label_Temperature">Temperature: </label>
 	<output type="text" id="Output_Temperature"></output></br>
-	<input type="submit" id="get_temperature" value="get_temperature" /> </input>
-
 	<label for="Humidity" id="Label_Humidity">Humidity: </label>
 	<output type="text" id="Output_Humidity"></output></br>
-	<input type="submit" id="get_humidity" value="get_humidity" /> </input>
+	<input type="submit" id="get_temperature" value="get_temperature" /> </input>
 
+	
 
 
 	</script>

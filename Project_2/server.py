@@ -3,6 +3,9 @@ import tornado.websocket
 import tornado.ioloop
 import tornado.web
 import socket
+import json
+import os
+from serial import *
 import Adafruit_DHT             #For Adafruit DHT22 humidity sensor
 '''
 This is a simple Websocket Echo server that uses the Tornado websocket handler.
@@ -19,11 +22,20 @@ class WSHandler(tornado.websocket.WebSocketHandler):
       
     def on_message(self, message):
         print ('message received:  %s' % message)
-        
         if message == "Temperature":
+            #make a dictionary
             humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
-            self.write_message(str(temperature))
-            
+            latest_data = {"temp": temperature, "hum": humidity}
+            #turn it to JSON and send it to the browser
+            self.write_message(json.dumps(latest_data))
+        
+        
+        
+        
+        #if message == "Temperature":
+            #humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+            #self.write_message(str(temperature))
+        #    self.write_message(str(get_paramaters(message)))
             
         #else:    
             # Reverse Message and send it back
@@ -35,10 +47,17 @@ class WSHandler(tornado.websocket.WebSocketHandler):
  
     def check_origin(self, origin):
         return True
- 
+        
 application = tornado.web.Application([
     (r'/ws', WSHandler),
 ])
+
+
+def get_paramaters(message):
+    if message == 'Temperature':
+        humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+        return temperature
+ 
  
  
 if __name__ == "__main__":
@@ -48,24 +67,13 @@ if __name__ == "__main__":
     print ('*** Websocket Server Started at %s***' % myIP)
     tornado.ioloop.IOLoop.instance().start()
 
+#<label for="Humidity" id="Label_Humidity">Humidity: </label>
+#<output type="text" id="Output_Humidity"></output></br>
+#<input type="submit" id="get_humidity" value="get_humidity" /> </input>
 
-
-#<div id="Latest_values">
-#<label for="Temperature">Temperature:</label>
-#<input type="text" id="temperature" value="27.34" style="background:#ff0000;"/><br />
-#<input type="submit" id="Get_Latest_Values" value="Get_Latest_Values" />
+#<div id="message_details">
+#</br></br>
+#<label for="message">message:</label>
+#<input type="text" id="message" value="Hello World!"/><br />
+#<input type="submit" id="send" value="send" />
 #</div>
-
-#<div id="Latest_values">
-#<label for="Temperature">Temperature:</label>
-#<input type="text" id="temperature" value="27.34" style="background:#ff0000;"/><br />
-#<button onclick="Get_Latest_Temperature()">Get Latest Temperature</button>
-#</div>
-	
-#<script>
-#function Get_Latest_Temperature()
-#{
-#document.getElementById("temperature").innerHTML = "Temperature Value will be printed here!";
-#}
-		
-#</script>		
