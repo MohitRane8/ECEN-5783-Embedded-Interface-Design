@@ -13,6 +13,7 @@ from mysql.connector import errorcode
 from datetime import datetime
 
 ##===============================================
+
 class DatabaseUtility: 
 	def __init__(self, database, tableName):
 		self.db = database

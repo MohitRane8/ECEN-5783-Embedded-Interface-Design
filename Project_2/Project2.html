@@ -24,60 +24,77 @@
         var ws;
  
         $("#open").click(function(evt) {
-        evt.preventDefault();
- 
-        var host = $("#host").val();
-        var port = $("#port").val();
-        var uri = $("#uri").val();
+			evt.preventDefault();
 	
+			var host = $("#host").val();
+			var port = $("#port").val();
+			var uri = $("#uri").val();
 		
-        // create websocket instance
-        ws = new WebSocket("ws://" + host + ":" + port + uri);
-           
-        // Handle incoming websocket message callback
-        ws.onmessage = function(evt) {
-		//var recv_msg = evt.data.split(",");
-		var recv_msg = JSON.parse(evt.data);
-		$("#Output_Temperature").val(recv_msg.temp.toFixed(2));
-		$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
-
-        };
- 
-        // Close Websocket callback
-        ws.onclose = function(evt) {
-        log("***Connection Closed***");
-        alert("Connection close");
-        $("#host").css("background", "#ff0000"); 
-        $("#port").css("background", "#ff0000"); 
-        $("#uri").css("background",  "#ff0000");
-        $("div#message_details").empty();
-        };
- 
-        // Open Websocket callback
-        ws.onopen = function(evt) { 
-        $("#host").css("background", "#00ff00"); 
-        $("#port").css("background", "#00ff00"); 
-        $("#uri").css("background", "#00ff00");
-        $("div#message_details").show();
-        
-        log("***Connection Opened***");
-        };
-      });
+			
+			// create websocket instance
+			ws = new WebSocket("ws://" + host + ":" + port + uri);
+			
+			// Handle incoming websocket message callback
+			ws.onmessage = function(evt) {
+				console.log('evt data: ' + evt.data);
+				var recv_msg = JSON.parse(evt.data);
+				var length_of_data = Object.keys(recv_msg).length;
+				console.log(length_of_data);		
+				
+				if (length_of_data == 2)
+				{
+					$("#Output_Temperature").val(recv_msg.temp.toFixed(2));
+					$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
+				}
+				else if (length_of_data == 10)
+				{
+					var i;
+					for(i=0;i<length_of_data;i++)
+					{
+						$("#Get_Ten_Latest_Values").val(recv_msg[i].toFixed(2));
+						console.log(recv_msg[i]);
+					}
+				}
+			};
+	
+			// Close Websocket callback
+			ws.onclose = function(evt) {
+				log("***Connection Closed***");
+				alert("Connection close");
+				$("#host").css("background", "#ff0000"); 
+				$("#port").css("background", "#ff0000"); 
+				$("#uri").css("background",  "#ff0000");
+				$("div#message_details").empty();
+			};
+	
+			// Open Websocket callback
+			ws.onopen = function(evt) { 
+				$("#host").css("background", "#00ff00"); 
+				$("#port").css("background", "#00ff00"); 
+				$("#uri").css("background", "#00ff00");
+				$("div#message_details").show();
+				
+				log("***Connection Opened***");
+			};
+		});
  
         // Send websocket message function
         $("#send").click(function(evt) {
-        log("Sending Message: "+$("#message").val());
-        ws.send($("#message").val());
-      });
+			log("Sending Message: "+$("#message").val());
+			ws.send($("#message").val());
+      	});
       
-      // Get latest temperature
-      $("#get_temperature").click(function(evt){
-	      //log("Sending temperature: "+$("#Temperature").val());
-	      //ws.send($("#Temperature").val());
-	      ws.send("Temperature");
-      }); 
+		// Get latest temperature
+		$("#Get_Latest_Values").click(function(evt) {
+			//log("Sending temperature: "+$("#Temperature").val());
+			//ws.send($("#Temperature").val());
+			ws.send("Temperature");
+		}); 
       
- 
+		// Get ten latest values
+		$("#Get_Ten_Latest_Values").click(function(evt) {
+			ws.send("Get_Ten_Latest_Values");
+		});
     });	
 </script>
 
@@ -106,7 +123,13 @@
 	<output type="text" id="Output_Temperature"></output></br>
 	<label for="Humidity" id="Label_Humidity">Humidity: </label>
 	<output type="text" id="Output_Humidity"></output></br>
-	<input type="submit" id="get_temperature" value="get_temperature" /> </input>
+	<input type="submit" id="Get_Latest_Values" value="Get_Latest_Values" /> </input>
+	</br></br>
+	<label for="Get_Ten_Latest_Values" id="Label_Get_Ten_Latest_Values">Get_Ten_Latest_Values: </label>
+	<output type="text" id="Output_Get_Ten_Latest_Values"></output></br>
+	<input type="submit" id="Get_Ten_Latest_Values" value="Get_Ten_Latest_Values" /> </input>
+	
+
 
 	
 

@@ -7,6 +7,10 @@ import json
 import os
 from serial import *
 import Adafruit_DHT             #For Adafruit DHT22 humidity sensor
+import prototype_1 as project_1 
+import dbManager
+ 
+
 '''
 This is a simple Websocket Echo server that uses the Tornado websocket handler.
 Please run `pip install tornado` with python of version 2.7.9 or greater to install tornado.
@@ -24,23 +28,35 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         print ('message received:  %s' % message)
         if message == "Temperature":
             #make a dictionary
-            humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+            humidity,temperature = Adafruit_DHT.read(DHT_SENSOR,DHT_PIN)
+            #If value not obtained, try for a max of 10 times until value is obtained        
+            if humidity is None and temperature is None:
+                for i in range(0,10):
+                    humidity,temperature = Adafruit_DHT.read(DHT_SENSOR,DHT_PIN)
+                    if humidity is not None and temperature is not None:
+                        print("Got Temperature, Breaking Loop")
+                        break
+            
             latest_data = {"temp": temperature, "hum": humidity}
+            
             #turn it to JSON and send it to the browser
             self.write_message(json.dumps(latest_data))
-        
-        
-        
-        
-        #if message == "Temperature":
-            #humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
-            #self.write_message(str(temperature))
-        #    self.write_message(str(get_paramaters(message)))
             
-        #else:    
-            # Reverse Message and send it back
-        #    print ('sending back message: %s' % message[::-1])
-        #    self.write_message(message[::-1])
+        elif message == "Get_Ten_Latest_Values":
+            humArray = [0,0,0,0,0,0,0,0,0,0]        #Initialize humidity array
+            tempArray = [0,0,0,0,0,0,0,0,0,0]       #Initialize temp array
+            
+            for i in range(10):
+                humidity,temperature = Adafruit_DHT.read_retry(DHT_SENSOR,DHT_PIN)
+                humArray[i] = humidity
+                tempArray[i] = temperature
+                print("Humidity " ,i, "=" ,humArray[i])
+                print("Temperature " ,i, "=", tempArray[i])
+            
+            self.write_message(str(humArray))
+            
+        
+       
  
     def on_close(self):
         print ('connection closed')
