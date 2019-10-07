@@ -54,11 +54,17 @@
 						
 						if (length_of_data == 2)
 						{
-							
-							//if(temp_flag == 0)
-							//{
-							//}
-							$("#Output_Temperature").val(recv_msg.temp.toFixed(2));
+							var temp;
+							// Display in Celsius
+							if(temp_flag == 0)
+							{
+								var temp = recv_msg.temp.toFixed(2);
+							}
+							else if(temp_flag == 1)
+							{
+								var temp = ((recv_msg.temp.toFixed(2))*1.8 + 32)
+							}
+							$("#Output_Temperature").val(temp);
 							$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
 						}
 						else if (length_of_data == 10)
@@ -120,6 +126,22 @@
 				$("#Get_Latest_Values").click(function(evt) {
 					ws.send("Temperature");
 				}); 
+				
+				// Get latest temperature
+				$("#Celsius").click(function(evt) {
+					if(temp_flag == 0)
+					{
+						$("#Output_C_F").val("F");
+						temp_flag = 1;
+					}
+					else if(temp_flag == 1)
+					{
+						$("#Output_C_F").val("C");
+						temp_flag = 0;
+					}
+				}); 
+				
+				
 			
 				// Get ten latest values
 				$("#Get_Ten_Latest_Values").click(function(evt) {
@@ -181,7 +203,17 @@
 					
 					else if (arr.length == 2) {
 						console.log('Temperature: ' + arr[0]);
-						$("#Output_NodeJS_Temperature").val(arr[0]);
+						var nodejs_temp;
+						if(temp_flag == 0)
+						{
+							nodejs_temp = arr[0];
+						}
+						else if(temp_flag == 1)
+						{
+							nodejs_temp = (((arr[0])*(1.8)) + 32);
+						}
+							
+						$("#Output_NodeJS_Temperature").val(nodejs_temp);
 						console.log('Humidity: ' + arr[1]);
 						$("#Output_NodeJS_Humidity").val(arr[1]);
 					}
