@@ -270,6 +270,10 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             #store temperature and humidity values in database
             self.dbu.AddEntryToTable(temperature, humidity)
             
+            #display and store latest graphs
+            #self.save_temperature_graph()
+            #self.save_humidity_graph()
+            
             formated_temperature = '{0:0.1f}'.format(temperature)       #Format Temperature up to 1 digit precision
             formated_humidity = '{0:0.1f}'.format(humidity)             #Format Humidity up to 1 digit precision
             
@@ -332,6 +336,7 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
         else:
             self.sysExit()
 
+    #Plot temperature graph on appropriate button press
     def get_temp_graph(self):
         self.graphicsView.clear()
         #Get last ten entries from database for plotting graphs
@@ -346,17 +351,12 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
 
         if flag == 0:
             self.graphicsView.plot(tempArray_C)
-            #plt.plot([1, 2, 3], [1, 4, 9])
-            plt.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tempArray_C)
-            plt.show()  
-            plt.savefig('temperature.png')    
+ 
         else:
             for i in range(10):
                 tempArray_F[i] = tempArray_C[i] * (1.8) + 32
 
             self.graphicsView.plot(tempArray_F)
-            plt.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tempArray_F)
-            plt.show() 
 
     #Plot humidity graph on appropriate button press
     def get_humidity_graph(self):
@@ -370,9 +370,34 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             humArray[9-i] = sqlHumTenArray[i][0]
 
         self.graphicsView.plot(humArray)        #Plot humidity graph
+        
+    def save_temperature_graph(self):
+        #Get last ten entries from database for plotting graphs
+        sqlTempTenArray = self.dbu.getLastTenTemperatureValues()
+        
+        #Initialize the array
+        tempArray_C = [0,0,0,0,0,0,0,0,0,0]
+
+        for i in range(10):
+            tempArray_C[9-i] = sqlTempTenArray[i][0]
+        
+        plt.clf()
+        plt.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tempArray_C)
+        plt.savefig('temperature.png')
+        
+    def save_humidity_graph(self):
+        #Get last ten entries from database for plotting graphs
+        sqlHumTenArray = self.dbu.getLastTenHumidityValues()
+        
+        #Initialize the array
+        humArray = [0,0,0,0,0,0,0,0,0,0]
+
+        for i in range(10):
+            humArray[9-i] = sqlHumTenArray[i][0]
+        
+        plt.clf()
         plt.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], humArray)
-        plt.show()
-        plt.savefig('humidity.png') 
+        plt.savefig('humidity.png')
 
     #Exit
     def sysExit(self):

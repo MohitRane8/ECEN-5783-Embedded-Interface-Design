@@ -40,20 +40,13 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                         print("Got Temperature, Breaking Loop")
                         break
             
+            if humidity is None and temperature is None:
+                humidity = -1
+                temperature = -1
+                
             latest_data = {"temp": temperature, "hum": humidity}
-            
             #turn it to JSON and send it to the browser
-            self.write_message(json.dumps(latest_data))
-            
-            with open("temperature.png", "rb") as imageFile:
-                imgStr = base64.b64encode(imageFile.read())
-                self.write_message(imgStr)
-            
-
-           # self.write_message({
-           #     "img": base64.b64encode(temperature.png.read()),
-           #     "desc": img_description,
-           # })
+            self.write_message(json.dumps(latest_data))            
             
         elif message == "Get_Ten_Latest_Values":
             '''
@@ -75,11 +68,19 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             humArray = [0,0,0,0,0,0,0,0,0,0]        #Initialize the array
 
             for i in range(10):
-                humArray[i] = sqlHumTenArray[i][0]
+                humArray[9-i] = sqlHumTenArray[i][0]
                 
             self.write_message(str(humArray))
         
-       
+        elif message == "Temperature Graph":
+            with open("temperature.png", "rb") as imageFile:
+                imgStr = base64.b64encode(imageFile.read())
+                self.write_message(imgStr)
+            
+        elif message == "Humidity Graph":
+            with open("humidity.png", "rb") as imageFile:
+                imgStr = base64.b64encode(imageFile.read())
+                self.write_message(imgStr)
  
     def on_close(self):
         print ('connection closed')

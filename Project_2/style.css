@@ -1,8 +1,56 @@
-body {
-    background-color: #0080ff;
+body
+{
+    background: silver;
+    text-align: center;
+    min-width: 500px;
+    font-family: verdana;
+    font-size: 100%;
 }
 
-h1 {
-    color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
+h1
+{
+    color: Black;
+    font-family: calibri;    
+}
+
+#Get_Latest_Values
+{
+    color: black;
+    font-family: calibri;    
+}
+
+#nodejs_table
+{
+    color: black;
+    font-family: calibri;    
+}
+
+#tornado_table
+{
+    color: black;
+    font-family: calibri;    
+}
+
+#nodejs_timestamp
+{
+    color: black;
+    font-family: calibri;    
+}
+
+#tornado_timestamp
+{
+    color: black;
+    font-family: calibri;    
+}
+
+#Output_C_F
+{
+    color: black;
+    font-family: calibri;    
+}
+
+#Celsius
+{
+    color: black;
+    font-family: calibri;    
 }

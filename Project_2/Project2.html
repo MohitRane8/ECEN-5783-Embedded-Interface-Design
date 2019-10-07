@@ -1,13 +1,15 @@
 <!doctype html>
 <html>
 	<head>
+		<link rel="stylesheet" href="style.css">
 		<title>Temperature & Humidity Monitoring System</title>
 		<meta charset="utf-8" />
 		<style type="text/css">
-			body {
+
+	<!--		body {
 				text-align: center;
 				min-width: 500px;
-			}
+			} -->
 		</style>
 		<script src="http://code.jquery.com/jquery.min.js"></script>
 		<script>
@@ -16,6 +18,8 @@
 			var end_time;
 			var difference;
 			var temp_flag = 0;	//Celsius
+			var img_flag = 0;
+			var rmv_child_flag = 0;
 			
 			// log function
 			log = function(data){
@@ -41,57 +45,83 @@
 					
 					// Handle incoming websocket message callback
 					ws.onmessage = function(evt) {
-						console.log('evt data: ' + evt.data);
-						var recv_msg = JSON.parse(evt.data);
-						
-						//Calculate End Time
-						var end_time = performance.now();
-						
-						//Calculate Length of received data
-						var length_of_data = Object.keys(recv_msg).length;
-						
-						console.log(length_of_data);		
-						
-						if (length_of_data == 2)
-						{
-							var temp;
-							// Display in Celsius
-							if(temp_flag == 0)
-							{
-								var temp = recv_msg.temp.toFixed(2);
-							}
-							else if(temp_flag == 1)
-							{
-								var temp = ((recv_msg.temp.toFixed(2))*1.8 + 32)
-							}
-							$("#Output_Temperature").val(temp);
-							$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
-						}
-						else if (length_of_data == 10)
-						{
+						if (img_flag == 0) {
+							console.log('evt data: ' + evt.data);
+							var recv_msg = JSON.parse(evt.data);
 							
-							var i;
-							for(i=0;i<length_of_data;i++)
-							{
-								var newRow = tornado_table.insertRow(tornado_table.length);
+							//Calculate End Time
+							var end_time = performance.now();
 							
-								for(var j=0; j <1  ; j++)
+							//Calculate Length of received data
+							var length_of_data = Object.keys(recv_msg).length;
+							
+							console.log(length_of_data);		
+							
+							if (length_of_data == 2)
+							{
+								var temp;
+								console.log(recv_msg.temp);
+								console.log(recv_msg.hum);
+								if(((recv_msg.temp == null) && (recv_msg.hum == null)) || ((recv_msg.temp == -1) && (recv_msg.hum == -1)))
 								{
-									var cell = newRow.insertCell(j);
-									cell.innerHTML = recv_msg[i].toFixed(2);							
+									$("#Output_Temperature").val("Sensor Disconnected");
+									$("#Output_Humidity").val("Sensor Disconnected");
+								}
+								else
+								{
+									// Display in Celsius
+									if(temp_flag == 0)
+									{
+										var temp = recv_msg.temp.toFixed(2);
+									}
+									else if(temp_flag == 1)
+									{
+										var temp = ((recv_msg.temp.toFixed(2))*1.8 + 32)
+									}
+								
+									$("#Output_Temperature").val(temp);
+									$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
+								
 								}
 							}
-							
-							//Tabulate Start,End and Difference time for tornado query
-							var newRow = tornado_timestamp.insertRow(tornado_timestamp.length);
-							var cell = newRow.insertCell(0);
-							cell.innerHTML = start_time.toFixed(2);
-							cell = newRow.insertCell(1);
-							cell.innerHTML = end_time.toFixed(2);
-							cell = newRow.insertCell(2);
-							difference = end_time - start_time;
-							cell.innerHTML = difference.toFixed(2) ;
+							else if (length_of_data == 10)
+							{
+								
+								var i;
+								for(i=0;i<length_of_data;i++)
+								{
+									var newRow = tornado_table.insertRow(tornado_table.length);
+								
+									for(var j=0; j <1  ; j++)
+									{
+										var cell = newRow.insertCell(j);
+										cell.innerHTML = recv_msg[i].toFixed(2);							
+									}
+								}
+								
+								//Tabulate Start,End and Difference time for tornado query
+								var newRow = tornado_timestamp.insertRow(tornado_timestamp.length);
+								var cell = newRow.insertCell(0);
+								cell.innerHTML = start_time.toFixed(2);
+								cell = newRow.insertCell(1);
+								cell.innerHTML = end_time.toFixed(2);
+								cell = newRow.insertCell(2);
+								difference = end_time - start_time;
+								cell.innerHTML = difference.toFixed(2) ;
 
+							}
+						}
+						else if (img_flag == 1) {
+							var image = new Image();
+							image.src = 'data:image/png;base64,' + evt.data;
+							/*
+							if (rmv_child_flag != 0) {
+								//var img = document.getElementById(image);
+								document.body.removeChild(image);
+							}
+							rmv_child_flag = 1;*/
+							document.body.appendChild(image);
+							img_flag = 0;
 						}
 					};
 			
@@ -140,7 +170,18 @@
 						temp_flag = 0;
 					}
 				}); 
+
+				// Get Temperature Graph
+				$("#Temperature_Graph").click(function(evt) {
+					img_flag = 1;
+					ws.send("Temperature Graph");
+				}); 				
 				
+				// Get Humidity Graph
+				$("#Humidity_Graph").click(function(evt) {
+					img_flag = 1;
+					ws.send("Humidity Graph");
+				}); 	
 				
 			
 				// Get ten latest values
@@ -296,6 +337,12 @@
 	<input type="submit" id="Celsius" value="Celsius/Fahrenheit"/> </input>
 	<!--Output for Cel/Fah -->
 	<output type="text" id="Output_C_F" ></output></br>
+	
+	<!--Button for Temperature Graph -->
+	<input type="submit" id="Temperature_Graph" value="Temperature Graph"/> </input>
+	<!--Button for Humidity Graph -->
+	<input type="submit" id="Humidity_Graph" value="Humidity Graph"/> </input>
+
 
 </br></br>
 

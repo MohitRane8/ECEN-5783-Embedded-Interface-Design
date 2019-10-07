@@ -12,32 +12,13 @@ var con = mysql.createConnection({
 
 con.connect(function(err) {
   if (err) throw err;
+  /*
   con.query("SELECT * FROM " + mytable, function (err, result, fields) {
 		if (err) throw err;
     console.log(result);
-  });
+  });*/
 });
 
-
-// function dbQuery(cmd) {
-// 	// console.log("mysql query: " + cmd);
-// 	var res;
-//   con.query(cmd, function (err, result, fields) {
-//     if (err) throw err;
-// 		// console.log(result);
-// 		// console.log(result[0]);
-// 		res = result[0].temp;
-// 		console.log(res);
-// 		console.log('typeof' + typeof res);		// typeof is number
-
-// 		res = res.toString();
-
-// 		console.log(res);
-// 		console.log('typeof' + typeof res);		// typeof is number
-
-// 		return res;
-// 	});
-// }
 
 const http = require('http');
 const WebSocketServer = require('websocket').server;
@@ -83,6 +64,7 @@ wsServer.on('request', function(request) {
             if (message.utf8Data === '2') {
                 // array to store humidity values
                 var humArray = [];
+                //var hum2Array = [0,0,0,0,0,0,0,0,0,0];
                 
                 // query last 10 humidity values in database
                 con.query("SELECT humidity FROM " + mytable + " ORDER BY ID DESC LIMIT 10", function (err, result, fields) {
@@ -90,11 +72,15 @@ wsServer.on('request', function(request) {
 
                     // loop to add values obtained from database to humidity array
                     for (i in result) {
-                        humArray.push(result[i].humidity);
+                        humArray.push(result[9-i].humidity);
                     }
+                    
+                    /*
+                    for i in range(10):
+                        hum2Array[9-i] = humArray[i][0]*/
 
                     // send last 10 humidity values to client
-                    // console.log(humArray);
+                    // console.log(hum2Array);
                     connection.sendUTF(humArray.toString());
                 });
             }
