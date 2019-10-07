@@ -29,6 +29,9 @@
 	
 			$(document).ready(function () {
 				$("div#message_details").hide()
+				
+				// nodejs websocket
+				const wsjs = new WebSocket('ws://10.0.0.180:9898/');
 
 				var ws;
 
@@ -186,13 +189,20 @@
 			
 				// Get ten latest values
 				$("#Get_Ten_Latest_Values").click(function(evt) {
+					console.log('Get Ten Value Button clicked');
+
+					// get start time of transaction
+					startTime = performance.now();
+					console.log('start time = ' + startTime);
+
+					// Inform server that button is clicked
+					wsjs.send('2');
+					
 					start_time = performance.now();
 					ws.send("Get_Ten_Latest_Values");
 				});
 
 				// -----------------NodeJS and MySQL Script------------------
-				const wsjs = new WebSocket('ws://10.0.0.180:9898/');
-
 				// timing parameters
 				var startTime;
 				var stopTime;
