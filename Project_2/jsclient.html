@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Playground</title>
+</head>
+<body>
+    <button type="button" id="getValueBtn">Get Values</button>
+    <button type="button" id="tenHumBtn">Get Last 10 Humidity Values</button>
+</body>
+
+<script>
+
+const wsjs = new WebSocket('ws://localhost:9898/');
+
+// timing parameters
+var startTime;
+var stopTime;
+var elapsedTime;
+
+wsjs.onopen = function() {
+    console.log('WebSocket Client Connected');
+    wsjs.send('Hi this is web client.');
+};
+
+wsjs.onmessage = function(e) {
+    console.log("Received: '" + e.data + "'");
+
+    // split string containing array of values separated by comma
+    var arr = e.data.split(",");
+    console.log(arr);
+    // console.log(arr.length);
+
+    // DO THE FOLLOWING IF ARRAY OF 10 ELEMENTS IS RECEIVED
+    if (arr.length == 10) {
+        // get stop time of transaction
+        stopTime = performance.now();
+        console.log('stop time = ' + stopTime);
+
+        // total transaction time
+        elapsedTime = stopTime - startTime;
+        console.log('elapsed time = ' + elapsedTime);
+    }
+};
+
+// Request data from server on button click
+getValueBtn.onclick = function(e) {
+    e.preventDefault();
+
+    // Inform server that button is clicked
+    wsjs.send('1');
+
+    return false;
+};
+
+// Request data from server on button click
+tenHumBtn.onclick = function(e) {
+    e.preventDefault();
+
+    // get start time of transaction
+    startTime = performance.now();
+    console.log('start time = ' + startTime);
+
+    // Inform server that button is clicked
+    wsjs.send('2');
+
+    return false;
+};
+
+</script>
+</html>

@@ -1,7 +1,7 @@
 // Node.js WebSocket server script
 var mysql = require('mysql');
-var mydb = "sampledb";
-var mytable = "samtable"
+var mydb = "eid_proj_1";
+var mytable = "temp_hum"
 
 var con = mysql.createConnection({
   host: "localhost",
@@ -12,7 +12,7 @@ var con = mysql.createConnection({
 
 con.connect(function(err) {
   if (err) throw err;
-  con.query("SELECT * FROM samtable", function (err, result, fields) {
+  con.query("SELECT * FROM " + mytable, function (err, result, fields) {
 		if (err) throw err;
     console.log(result);
   });
@@ -42,7 +42,7 @@ con.connect(function(err) {
 const http = require('http');
 const WebSocketServer = require('websocket').server;
 const server = http.createServer();
-server.listen(8888);
+server.listen(9898);
 
 const wsServer = new WebSocketServer({
     httpServer: server
