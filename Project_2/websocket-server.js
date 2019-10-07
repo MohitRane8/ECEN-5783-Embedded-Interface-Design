@@ -1,7 +1,7 @@
 // Node.js WebSocket server script
 var mysql = require('mysql');
 var mydb = "eid_proj_1";
-var mytable = "temp_hum"
+var mytable = "prototype_table"
 
 var con = mysql.createConnection({
   host: "localhost",

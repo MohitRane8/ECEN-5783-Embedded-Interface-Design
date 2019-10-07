@@ -19,6 +19,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import dbManager, sys
 import Adafruit_DHT             #For Adafruit DHT22 humidity sensor
 import pyqtgraph as pg          #For plotting temperature & humidity graphs on GUI
+import matplotlib.pyplot as plt #For saving plot as image and send it to client
 
 DHT_SENSOR = Adafruit_DHT.DHT22
 DHT_PIN = 4                     #DHT22 data pin connected to Pin 4 of Raspberry Pi 3+ B
@@ -344,12 +345,18 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             tempArray_C[9-i] = sqlTempTenArray[i][0]
 
         if flag == 0:
-            self.graphicsView.plot(tempArray_C)       
+            self.graphicsView.plot(tempArray_C)
+            #plt.plot([1, 2, 3], [1, 4, 9])
+            plt.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tempArray_C)
+            plt.show()  
+            plt.savefig('temperature.png')    
         else:
             for i in range(10):
                 tempArray_F[i] = tempArray_C[i] * (1.8) + 32
 
             self.graphicsView.plot(tempArray_F)
+            plt.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tempArray_F)
+            plt.show() 
 
     #Plot humidity graph on appropriate button press
     def get_humidity_graph(self):
@@ -363,10 +370,13 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             humArray[9-i] = sqlHumTenArray[i][0]
 
         self.graphicsView.plot(humArray)        #Plot humidity graph
+        plt.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], humArray)
+        plt.show()
+        plt.savefig('humidity.png') 
 
     #Exit
     def sysExit(self):
-        self.dbu.DropTable()
+        #self.dbu.DropTable()
         sys.exit()
 
 

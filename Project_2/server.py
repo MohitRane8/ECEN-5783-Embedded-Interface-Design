@@ -8,8 +8,10 @@ import os
 from serial import *
 import Adafruit_DHT             #For Adafruit DHT22 humidity sensor
 import prototype_1 as project_1 
-import dbManager
- 
+from dbManager import DatabaseUtility
+import base64
+
+tordbu = DatabaseUtility("eid_proj_1", "prototype_table")
 
 '''
 This is a simple Websocket Echo server that uses the Tornado websocket handler.
@@ -22,6 +24,7 @@ DHT_PIN = 4                     #DHT22 data pin connected to Pin 4 of Raspberry 
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
+        #self.tordbu = dbManager.DatabaseUtility(eid_proj_1, prototype_table)
         print ("new connection")
       
     def on_message(self, message):
@@ -42,7 +45,18 @@ class WSHandler(tornado.websocket.WebSocketHandler):
             #turn it to JSON and send it to the browser
             self.write_message(json.dumps(latest_data))
             
+            with open("temperature.png", "rb") as imageFile:
+                imgStr = base64.b64encode(imageFile.read())
+                self.write_message(imgStr)
+            
+
+           # self.write_message({
+           #     "img": base64.b64encode(temperature.png.read()),
+           #     "desc": img_description,
+           # })
+            
         elif message == "Get_Ten_Latest_Values":
+            '''
             humArray = [0,0,0,0,0,0,0,0,0,0]        #Initialize humidity array
             tempArray = [0,0,0,0,0,0,0,0,0,0]       #Initialize temp array
             
@@ -54,7 +68,16 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                 print("Temperature " ,i, "=", tempArray[i])
             
             self.write_message(str(humArray))
+            '''
             
+            #Get last 10 values of humidity from database
+            sqlHumTenArray = tordbu.getLastTenHumidityValues()
+            humArray = [0,0,0,0,0,0,0,0,0,0]        #Initialize the array
+
+            for i in range(10):
+                humArray[i] = sqlHumTenArray[i][0]
+                
+            self.write_message(str(humArray))
         
        
  
@@ -83,13 +106,4 @@ if __name__ == "__main__":
     print ('*** Websocket Server Started at %s***' % myIP)
     tornado.ioloop.IOLoop.instance().start()
 
-#<label for="Humidity" id="Label_Humidity">Humidity: </label>
-#<output type="text" id="Output_Humidity"></output></br>
-#<input type="submit" id="get_humidity" value="get_humidity" /> </input>
 
-#<div id="message_details">
-#</br></br>
-#<label for="message">message:</label>
-#<input type="text" id="message" value="Hello World!"/><br />
-#<input type="submit" id="send" value="send" />
-#</div>

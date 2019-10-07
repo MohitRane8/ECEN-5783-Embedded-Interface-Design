@@ -15,8 +15,8 @@
 			var start_time;
 			var end_time;
 			var difference;
+			var temp_flag = 0;	//Celsius
 			
-				
 			// log function
 			log = function(data){
 				$("div#terminal").prepend("</br>" +data);
@@ -42,11 +42,12 @@
 					// Handle incoming websocket message callback
 					ws.onmessage = function(evt) {
 						console.log('evt data: ' + evt.data);
+						
+						
 						var recv_msg = JSON.parse(evt.data);
 						
 						//Calculate End Time
-						var d = new Date();
-						var end_time = d.getTime();
+						var end_time = performance.now();
 						
 						//Calculate Length of received data
 						var length_of_data = Object.keys(recv_msg).length;
@@ -60,35 +61,30 @@
 						}
 						else if (length_of_data == 10)
 						{
+							
 							var i;
 							for(i=0;i<length_of_data;i++)
 							{
-								var d = new Date();
-								var n = d.getTime();
-								var newRow = tornado_table.insertRow(tornado_table.length);
+								if(count == 0)
+								{
+									var newRow = tornado_table.insertRow(tornado_table.length);
+								}
 								for(var j=0; j <1  ; j++)
-								{Get_Latest_Values
+								{
 									var cell = newRow.insertCell(j);
 									cell.innerHTML = recv_msg[i].toFixed(2);							
 								}
-								for(var j=1; j <2  ; j++)
-								{
-									var cell = newRow.insertCell(j);
-									cell.innerHTML = n;							
-								}
-								//$("#Get_Ten_Latest_Values").val(recv_msg[i].toFixed(2));
-								//console.log(recv_msg[i]);
-								console.log("Added Row")
 							}
 							
 							//Tabulate Start,End and Difference time for tornado query
 							var newRow = tornado_timestamp.insertRow(tornado_timestamp.length);
 							var cell = newRow.insertCell(0);
-							cell.innerHTML = start_time;
+							cell.innerHTML = start_time.toFixed(2);
 							cell = newRow.insertCell(1);
-							cell.innerHTML = end_time;
+							cell.innerHTML = end_time.toFixed(2);
 							cell = newRow.insertCell(2);
-							cell.innerHTML = end_time - start_time ;
+							difference = end_time - start_time;
+							cell.innerHTML = difference.toFixed(2) ;
 
 						}
 					};
@@ -127,8 +123,7 @@
 			
 				// Get ten latest values
 				$("#Get_Ten_Latest_Values").click(function(evt) {
-					var d = new Date();
-					start_time = d.getTime();
+					start_time = performance.now();
 					ws.send("Get_Ten_Latest_Values");
 				});
 
@@ -159,26 +154,29 @@
 						stopTime = performance.now();
 						console.log('stop time = ' + stopTime);
 						
-							var i;
-							for(i=0;i<arr.length;i++)
-							{
-								var newRow = nodejs_table.insertRow(nodejs_table.length);
-								for(var j=0; j <1  ; j++)
-								{
-									var cell = newRow.insertCell(j);
-									cell.innerHTML = arr[i];							
-								}
-							/*	for(var j=1; j <2  ; j++)
-								{
-									var cell = newRow.insertCell(j);
-									cell.innerHTML = n;							
-								}
-							*/
-							}
-
 						// total transaction time
 						elapsedTime = stopTime - startTime;
 						console.log('elapsed time = ' + elapsedTime);
+						
+						var i;
+						for(i=0;i<arr.length;i++)
+						{
+							var newRow = nodejs_table.insertRow(nodejs_table.length);
+							for(var j=0; j <1  ; j++)
+							{
+								var cell = newRow.insertCell(j);
+								cell.innerHTML = arr[i];							
+							}
+						}
+						
+						//Tabulate Start,End and Difference time for nodejs query
+						var newRow = nodejs_timestamp.insertRow(nodejs_timestamp.length);
+						var cell = newRow.insertCell(0);
+						cell.innerHTML = startTime.toFixed(2);
+						cell = newRow.insertCell(1);
+						cell.innerHTML = stopTime.toFixed(2);
+						cell = newRow.insertCell(2);
+						cell.innerHTML = elapsedTime.toFixed(2);
 					}
 					
 					else if (arr.length == 2) {
