@@ -42,7 +42,7 @@ con.connect(function(err) {
 const http = require('http');
 const WebSocketServer = require('websocket').server;
 const server = http.createServer();
-server.listen(9898);
+server.listen(9898, '10.0.0.180');
 
 const wsServer = new WebSocketServer({
     httpServer: server

@@ -42,8 +42,6 @@
 					// Handle incoming websocket message callback
 					ws.onmessage = function(evt) {
 						console.log('evt data: ' + evt.data);
-						
-						
 						var recv_msg = JSON.parse(evt.data);
 						
 						//Calculate End Time
@@ -56,6 +54,10 @@
 						
 						if (length_of_data == 2)
 						{
+							
+							//if(temp_flag == 0)
+							//{
+							//}
 							$("#Output_Temperature").val(recv_msg.temp.toFixed(2));
 							$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
 						}
@@ -65,10 +67,8 @@
 							var i;
 							for(i=0;i<length_of_data;i++)
 							{
-								if(count == 0)
-								{
-									var newRow = tornado_table.insertRow(tornado_table.length);
-								}
+								var newRow = tornado_table.insertRow(tornado_table.length);
+							
 								for(var j=0; j <1  ; j++)
 								{
 									var cell = newRow.insertCell(j);
@@ -128,7 +128,7 @@
 				});
 
 				// -----------------NodeJS and MySQL Script------------------
-				const wsjs = new WebSocket('ws://localhost:9898/');
+				const wsjs = new WebSocket('ws://10.0.0.180:9898/');
 
 				// timing parameters
 				var startTime;
@@ -205,6 +205,9 @@
 
 					// Inform server that button is clicked
 					wsjs.send('2');
+					
+					start_time = performance.now();
+					ws.send("Get_Ten_Latest_Values");
 				});
 			});	
 		</script>
@@ -215,7 +218,7 @@
 		<h1>Temperature and Humidity Monitoring System</h1>
 		<div id="connection_details">
 			<label for="host">host:</label>
-			<input type="text" id="host" value="localhost" style="background:#ff0000;"/><br />
+			<input type="text" id="host" value="10.0.0.180" style="background:#ff0000;"/><br />
 			<label for="port">port:</label>
 			<input type="text" id="port" value="8888" style="background:#ff0000;"/><br />
 			<label for="uri">uri:</label>
@@ -248,18 +251,20 @@
 	<!--Output for NodeJS Humidity-->
 	<output type="text" id="Output_NodeJS_Humidity" style="float: right"></output></br>
 
-	<!--Button For Tornado latest values -->
+	<!--Button For  latest values -->
 	<input type="submit" id="Get_Latest_Values" value="Get Latest Values" style="float: left" /> </input>
 	<input type="submit" id="Get_Latest_Values_for_NodeJS" value="Get Latest Values" style="float: right" /> </input>
-<!--	<button type="button" id="getValueBtn" style="float: right">Get Latest Values</button> -->
 	</br>
-<!--	<label for="Get_Ten_Latest_Values" id="Label_Get_Ten_Latest_Values" style="float: left">Get_Ten_Latest_Values: </label> -->
-<!--	<output type="text" id="Output_Get_Ten_Latest_Values" style="float: left"></output> -->
 	</br>
+	<!--Button for last ten latest Values  -->
 	<input type="submit" id="Get_Ten_Latest_Values" value="Get Ten Latest Values" style="float: left" /> </input>
 	<input type="submit" id="Get_Ten_Latest_Values_for_NodeJS" value="Get Ten Latest Values" style="float: right" /> </input>
-<!--	<button type="button" id="tenHumBtn" style="float: right">Get Ten Latest Values</button> -->
-		
+	
+	<!--Button for Celsius/Fahrenheit change -->
+	<input type="submit" id="Celsius" value="Celsius/Fahrenheit"/> </input>
+	<!--Output for Cel/Fah -->
+	<output type="text" id="Output_C_F" ></output></br>
+
 </br></br>
 
 
