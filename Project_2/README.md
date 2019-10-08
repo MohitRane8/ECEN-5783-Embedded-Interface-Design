@@ -55,3 +55,11 @@
     A push button was added to change the units of Temperature from Celsius to Fahrenheit and vice-versa. 
     On pressing that button on the HTML webpage, all the temperature values changed from Celsius to Fahrenheit. 
     If the button was pressed multiple times, the unit of Temperature shifts from one to the other.
+    
+## REFERENCES
+    Interaction between NodeJS and MySQL: https://www.w3schools.com/nodejs/nodejs_mysql.asp
+    NodeJS Webserver Example: https://www.pubnub.com/blog/nodejs-websocket-programmingexamples/
+    Python-Tornado-HTML example: https://os.mbed.com/cookbook/Websockets-Server
+    HTML syntax and example: https://www.w3schools.com/
+    Populating data in table (HTML): https://www.youtube.com/watch?v=40qreu8Al7o
+    TimeStamp example (HTML): https://www.w3schools.com/jsref/jsref_gettime.asp
