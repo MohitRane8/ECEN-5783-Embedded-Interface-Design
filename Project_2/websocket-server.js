@@ -1,4 +1,11 @@
-// Node.js WebSocket server script
+/*@Author_Name: Mohit Rane
+ *@Date: 22 September 2019
+ *@Project Members: Om Raheja & Mohit Rane
+ *@Embedded Interface Design Project 1
+ *@Temperature and Humidity monitoring system (Tornado server, NodeJS server and HTML client) *
+ * */
+
+/* Node.js WebSocket server script */
 var mysql = require('mysql');
 var mydb = "eid_proj_1";
 var mytable = "prototype_table"
@@ -12,18 +19,13 @@ var con = mysql.createConnection({
 
 con.connect(function(err) {
   if (err) throw err;
-  /*
-  con.query("SELECT * FROM " + mytable, function (err, result, fields) {
-		if (err) throw err;
-    console.log(result);
-  });*/
 });
 
 
 const http = require('http');
 const WebSocketServer = require('websocket').server;
 const server = http.createServer();
-server.listen(9898, '10.0.0.180');
+server.listen(9898, '128.138.189.73');
 
 const wsServer = new WebSocketServer({
     httpServer: server
@@ -37,7 +39,6 @@ wsServer.on('request', function(request) {
 						
             // get latest temperature and humidity value
             if (message.utf8Data === '1') {
-                // connection.sendUTF('test');
                 // array to store temperature and humidity values
                 var valArray = [];
 
@@ -55,7 +56,6 @@ wsServer.on('request', function(request) {
                     console.log('latest humidity: ' + valArray[1]);
 
                     // send latest temperature and humidity value to client
-                    // console.log(valArray);
                     connection.sendUTF(valArray.toString());
                 });
             }
@@ -64,7 +64,6 @@ wsServer.on('request', function(request) {
             if (message.utf8Data === '2') {
                 // array to store humidity values
                 var humArray = [];
-                //var hum2Array = [0,0,0,0,0,0,0,0,0,0];
                 
                 // query last 10 humidity values in database
                 con.query("SELECT humidity FROM " + mytable + " ORDER BY ID DESC LIMIT 10", function (err, result, fields) {
@@ -75,17 +74,9 @@ wsServer.on('request', function(request) {
                         humArray.push(result[9-i].humidity);
                     }
                     
-                    /*
-                    for i in range(10):
-                        hum2Array[9-i] = humArray[i][0]*/
-
-                    // send last 10 humidity values to client
-                    // console.log(hum2Array);
                     connection.sendUTF(humArray.toString());
                 });
             }
-
-            // connection.sendUTF('Hi this is WebSocket server!');
         }
     });
     connection.on('close', function(reasonCode, description) {

@@ -1,3 +1,11 @@
+#!/usr/bin/python3
+
+#Author_Name: Om Raheja and Mohit Rane
+#Date: 7 October 2019
+#Project Members: Om Raheja & Mohit Rane
+#Embedded Interface Design Project 2
+#Temperature and Humidity monitoring system (Tornado server, NodeJS server and HTML client)
+
 import tornado.httpserver
 import tornado.websocket
 import tornado.ioloop
@@ -9,7 +17,7 @@ from serial import *
 import Adafruit_DHT             #For Adafruit DHT22 humidity sensor
 import prototype_1 as project_1 
 from dbManager import DatabaseUtility
-import base64
+import base64                   #For transfering images from server to client
 
 tordbu = DatabaseUtility("eid_proj_1", "prototype_table")
 
@@ -102,9 +110,7 @@ def get_paramaters(message):
  
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(8888, '10.0.0.180')
+    http_server.listen(8888, '128.138.189.73')
     myIP = socket.gethostbyname(socket.gethostname())
     print ('*** Websocket Server Started at %s***' % myIP)
     tornado.ioloop.IOLoop.instance().start()
-
-
