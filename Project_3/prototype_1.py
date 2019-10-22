@@ -294,16 +294,30 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             print (payload)
             myMQTTClient.publish("thing01/info", payload, 0)
             
+            
+            
             if flag == 0:
                 formated_temperature_C = formated_temperature
                 if (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) <= hum_thresh):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Below Threshold             Humidity: Below Threshold"))
+                    payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
+                    print (payload)
+                    myMQTTClient.publish("thing01/info", payload, 0)
                 elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) <= hum_thresh):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Above Threshold             Humidity: Below Threshold"))
+                    payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
+                    print (payload)
+                    myMQTTClient.publish("thing01/info", payload, 0)
                 elif (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) >= hum_thresh):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Below Threshold             Humidity: Above Threshold"))
+                    payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
+                    print (payload)
+                    myMQTTClient.publish("thing01/info", payload, 0)
                 elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) >= hum_thresh):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Above Threshold             Humidity: Above Threshold"))
+                    payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
+                    print (payload)
+                    myMQTTClient.publish("thing01/info", payload, 0)
 
                 status_line = 'Temp: ' + str(formated_temperature_C) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
                 self.statusLineEdit.setText(_translate("MainWindow",status_line))
