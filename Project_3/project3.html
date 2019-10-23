@@ -18,7 +18,7 @@
 
 	$(document).ready(function () {	
 		console.log("enter");
-		
+		$("#Output_C_F").val("C");		
 		// Initialize the Amazon Cognito credentials provider
 		AWS.config.region = 'us-east-1'; // Region
 		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -68,6 +68,7 @@
 		// 0 - C, 1 = F
 		// default - C
 		var tempUnitFlag = 0;
+		var i = 0;
 		
 		/****	1	****/
 		// get single value from SQS on button click and delete that entry from SQS
@@ -99,8 +100,9 @@
 					console.log(humValue);
 					$("#Output_Temperature").val(tempValue);
 					$("#Output_Humidity").val(humValue);
+					$("#Output_Timestamp").val(timeValue);
 					// delete entry from SQS
-					/*
+					
 					var delParams = {
 						QueueUrl: queueUrl, // required
 						ReceiptHandle: String(data.Messages[0].ReceiptHandle)
@@ -109,7 +111,7 @@
 						if (err) console.log(err, err.stack); // an error occurred
 						else     console.log(data);
 					});
-					*/
+					
 				}
 			});
 			
@@ -119,6 +121,7 @@
 				else {
 					//console.log(data);
 					console.log(data.Attributes.ApproximateNumberOfMessages);
+					$("#msg_count").val(data.Attributes.ApproximateNumberOfMessages);
 				}
 			});
 		})
@@ -134,15 +137,25 @@
 				else {
 					console.log(data.Attributes.ApproximateNumberOfMessages);
 					
-					var i;
+					sqsTable = document.getElementById("sqsTable");
+					
+					//var i = 0;
 					var timeArray = [];
 					var tempArray = [];
 					var humArray = [];
-					for (i = 0; i < data.Attributes.ApproximateNumberOfMessages; i++) {	
+					//var array = [20][3];
+					for (i = 0; i < data.Attributes.ApproximateNumberOfMessages; i++) {						
 						// receive message
 						mysqs.receiveMessage(allRecvParams, function(err, data) {
 							if (err) console.log(err, err.stack); // an error occurred
-							else {				
+							else {
+								if ( typeof mysqs.receiveMessage.counter == 'undefined' ) {
+									mysqs.receiveMessage.counter = 0;
+								}
+								
+								++mysqs.receiveMessage.counter;
+								console.log("counter = %d", mysqs.receiveMessage.counter);
+		
 								// log full data
 								//console.log(data);
 								// log JSON body having timestamp, temperature and humidity values
@@ -150,20 +163,25 @@
 								// parse JSON object
 								var reqParams = JSON.parse(data.Messages[0].Body);
 								
-								// store parameters in array
-								timeArray[i%20] = reqParams.timestamp;
-								tempArray[i%20] = reqParams.temperature;
-								humArray[i%20] = reqParams.humidity;
+								// store parameters in array								
+								timeArray[mysqs.receiveMessage.counter%20] = reqParams.timestamp;
+								tempArray[mysqs.receiveMessage.counter%20] = reqParams.temperature;
+								humArray[mysqs.receiveMessage.counter%20] = reqParams.humidity;
+								
 								
 								// set temperature values according to required units
 								if(tempUnitFlag == 1) {
-									tempArray[i%20] = tempArray[i%20]*1.8+32;
+									tempArray[mysqs.receiveMessage.counter%20] = tempArray[mysqs.receiveMessage.counter%20]*1.8+32;
 								}
 								
-								console.log("timestamp [%d] = %s", i, timeArray[i%20]);
-								console.log("temperature [%d] = %f", i, tempArray[i%20]);
-								console.log("humidity [%d] = %f", i, humArray[i%20]);
+								console.log("timestamp [%d] = %s", i, timeArray[mysqs.receiveMessage.counter%20]);
+								console.log("temperature [%d] = %f", i, tempArray[mysqs.receiveMessage.counter%20]);
+								console.log("humidity [%d] = %f", i, humArray[mysqs.receiveMessage.counter%20]);
 								
+								sqsTable.rows[(mysqs.receiveMessage.counter%20)+1].cells[0].innerHTML = timeArray[mysqs.receiveMessage.counter%20];
+								sqsTable.rows[(mysqs.receiveMessage.counter%20)+1].cells[1].innerHTML = tempArray[mysqs.receiveMessage.counter%20];
+								sqsTable.rows[(mysqs.receiveMessage.counter%20)+1].cells[2].innerHTML = humArray[mysqs.receiveMessage.counter%20];
+																
 								// delete entry from SQS
 								/*
 								var delParams = {
@@ -188,6 +206,7 @@
 				else {
 					//console.log(data);
 					console.log(data.Attributes.ApproximateNumberOfMessages);
+					$("#msg_count").val(data.Attributes.ApproximateNumberOfMessages);
 				}
 			});
 		})
@@ -201,6 +220,7 @@
 				else {
 					//console.log(data);
 					console.log(data.Attributes.ApproximateNumberOfMessages);
+					$("#msg_count").val(data.Attributes.ApproximateNumberOfMessages);
 				}
 			});
 		})
@@ -209,36 +229,182 @@
 		// convert units of temperature
 		$('#tempUnitBtn').click(function(){	
 			if (tempUnitFlag == 0) {
+				$("#Output_C_F").val("F");
 				tempUnitFlag = 1;
 			}
 			else {
+				$("#Output_C_F").val("C");
 				tempUnitFlag = 0;
 			}
 		})
 	});
-	
+
     </script>
  
   <body>
   
 	<p id="demo"></p>
+	AWS Temperature and Humidity Monitoring System</br></br>
 
-    <button type="button" id="getValueBtn">Get Value</button> 
-	<button type="button" id="allValuesBtn">Get All Values</button> 
-	<button type="button" id="msgCountBtn">Get Message Count</button> 
-	<button type="button" id="tempUnitBtn">C/F</button>	
-	
+    <button type="button" id="getValueBtn" style="float: left">Get Value</button></br></br>
 	<!--Label for Temperature-->
-	<label for="Temperature" id="Label_Temperature">Temperature: </label></br>
-	<output type="text" id="Output_Temperature" ></output></br>
-
+	<label for="Temperature" id="Label_Temperature" style="float: left">Temperature: </label>
+	<!--Output for Temperature-->
+	<output type="text" id="Output_Temperature" style="float: left" ></output></br>
 	<!--Label for Humidity -->
-	<label for="Humidity" id="Label_Humidity">Humidity: </label>
+	<label for="Humidity" id="Label_Humidity" style="float: left">Humidity: </label>
 	<!--Output for Humidity-->
-	<output type="text" id="Output_Humidity"></output></br>
-	
+	<output type="text" id="Output_Humidity" style="float: left"></output></br>
+	<!--Label for Timestamp -->
+	<label for="Timestamp" id="Label_Timestamp" style="float: left">Timestamp: </label>
+	<!--Output for Timestamp-->
+	<output type="text" id="Output_Timestamp" style="float: left"></output></br>
+
+	<!--Output for Message count in SQS queue-->
+	<button type="button" id="msgCountBtn">Get Message Count</button>
+	<output type="text" id="msg_count" ></output></br>
+
+	<button type="button" id="tempUnitBtn">C/F</button>
 	<!--Output for Cel/Fah -->
-	<output type="text" id="Output_C_F" ></output></br>
+	<output type="text" id="Output_C_F" ></output>	</br>
+	<button type="button" id="allValuesBtn">Get All Values</button></br> 
+	
+	<div>
+	<table id="sqsTable" border="1" style="float:left">
+	<caption>SQS Data</caption>
+	
+	<tr>
+		<th>Timestamp</th>
+		<th>Temperature</th>
+		<th>Humidity</th>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+		<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	<tr>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	
+	</table>
+	
+	
+	</div>
+
 	
 
   </body>
