@@ -295,6 +295,10 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             formated_humidity = '{0:0.1f}'.format(humidity)             #Format Humidity up to 1 digit precision
             current_time = QtCore.QDateTime.currentDateTime().toString()
             
+            payload = '{ "Msg_type": "data" , "timestamp": "' + current_time + '","temperature": ' + str(formated_temperature) + ',"humidity": '+ str(formated_humidity) + ' }'
+		    print (payload)
+		    myMQTTClient.publish("my/lambda/topic", payload, 0)
+            
             if flag == 0:
                 formated_temperature_C = formated_temperature
                 if (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) <= hum_thresh):
