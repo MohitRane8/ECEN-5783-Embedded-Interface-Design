@@ -183,7 +183,7 @@
 								sqsTable.rows[(mysqs.receiveMessage.counter%20)+1].cells[2].innerHTML = humArray[mysqs.receiveMessage.counter%20];
 																
 								// delete entry from SQS
-								/*
+						
 								var delParams = {
 									QueueUrl: queueUrl, // required
 									ReceiptHandle: String(data.Messages[0].ReceiptHandle)
@@ -192,7 +192,7 @@
 									if (err) console.log(err, err.stack); // an error occurred
 									else     console.log(data);
 								});
-								*/
+								
 							}
 						});
 					}

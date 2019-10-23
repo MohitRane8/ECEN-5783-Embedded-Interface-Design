@@ -266,7 +266,9 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
                 print("TimeStamp:",current_time)
 
         else:
-            print("Failed to retrieve data from humidity sensor")
+                payload = '{ "Msg_type": "alert" , "Sensor Status": "Sensor Disconnected" }'
+                myMQTTClient.publish("my/lambda/topic", payload, 0)
+                print("Failed to retrieve data from humidity sensor")
 
 
     #Get temperature and humidity values every time the 15 sec timer fires
@@ -292,12 +294,6 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             formated_temperature = '{0:0.1f}'.format(temperature)       #Format Temperature up to 1 digit precision
             formated_humidity = '{0:0.1f}'.format(humidity)             #Format Humidity up to 1 digit precision
             current_time = QtCore.QDateTime.currentDateTime().toString()
-            
-            payload = '{ "Msg_type": "data" , "timestamp": "' + current_time + '","temperature": ' + str(formated_temperature) + ',"humidity": '+ str(formated_humidity) + ' }'
-            print (payload)
-            myMQTTClient.publish("my/lambda/topic", payload, 0)
-            
-            
             
             if flag == 0:
                 formated_temperature_C = formated_temperature
@@ -342,6 +338,8 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             current_time = QtCore.QDateTime.currentDateTime().toString()
             status_line = 'Temp: ' + formated_temperature + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Disconnected'
             self.statusLineEdit.setText(_translate("MainWindow",status_line))
+            payload = '{ "Msg_type": "alert" , "Sensor Status": "Sensor Disconnected" }'
+            myMQTTClient.publish("my/lambda/topic", payload, 0)
             print("Failed to retrieve data from humidity sensor")
 
     # Flag = 0 (Temperature is in C)
