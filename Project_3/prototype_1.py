@@ -6,6 +6,9 @@
 # Referred to the following link for reading DHT values
 # https://www.youtube.com/watch?v=2TibG64zLeA
 # http://zetcode.com/gui/pyqt5/datetime/
+# ARN: arn:aws:sns:us-east-1:222513434401:project_3_sns_topic
+# arn:aws:sns:us-east-1:222513434401:project_3_sns_topic
+# arn:aws:lambda:us-east-1:222513434401:function:myLambdaFunction
 
 # -*- coding: utf-8 -*-
 
@@ -243,7 +246,7 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             current_time = QtCore.QDateTime.currentDateTime().toString()
             payload = '{ "Msg_type": "data" , "timestamp": "' + current_time + '","temperature": ' + str(formated_temperature) + ',"humidity": '+ str(formated_humidity) + ' }'
             print (payload)
-            myMQTTClient.publish("thing01/info", payload, 0)
+            myMQTTClient.publish("my/lambda/topic", payload, 0)
 
             if flag == 0:
                 formated_temperature_C = formated_temperature
@@ -292,7 +295,7 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
             
             payload = '{ "Msg_type": "data" , "timestamp": "' + current_time + '","temperature": ' + str(formated_temperature) + ',"humidity": '+ str(formated_humidity) + ' }'
             print (payload)
-            myMQTTClient.publish("thing01/info", payload, 0)
+            myMQTTClient.publish("my/lambda/topic", payload, 0)
             
             
             
@@ -302,22 +305,22 @@ class Ui_TemperatureAndHumidity(QtWidgets.QWidget):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Below Threshold             Humidity: Below Threshold"))
                     payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
                     print (payload)
-                    myMQTTClient.publish("thing01/info", payload, 0)
+                    myMQTTClient.publish("my/lambda/topic", payload, 0)
                 elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) <= hum_thresh):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Above Threshold             Humidity: Below Threshold"))
                     payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
                     print (payload)
-                    myMQTTClient.publish("thing01/info", payload, 0)
+                    myMQTTClient.publish("my/lambda/topic", payload, 0)
                 elif (float(formated_temperature_C) <= temp_thresh) and (float(formated_humidity) >= hum_thresh):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Below Threshold             Humidity: Above Threshold"))
                     payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
                     print (payload)
-                    myMQTTClient.publish("thing01/info", payload, 0)
+                    myMQTTClient.publish("my/lambda/topic", payload, 0)
                 elif (float(formated_temperature_C) >= temp_thresh) and (float(formated_humidity) >= hum_thresh):
                     self.alarmMessageLineEdit.setText(_translate("MainWindow","Temperature: Above Threshold             Humidity: Above Threshold"))
                     payload = '{ "Msg_type": "alert" , "timestamp": "' + current_time + '","temperature alert level": ' + str(temp_thresh) + ',"temperature trigger level": '+ str(formated_temperature) + ',"Humidity alert level":  '+ str(hum_thresh) + ',"Humidity trigger level": '+ str(formated_humidity) + ' }'
                     print (payload)
-                    myMQTTClient.publish("thing01/info", payload, 0)
+                    myMQTTClient.publish("my/lambda/topic", payload, 0)
 
                 status_line = 'Temp: ' + str(formated_temperature_C) + ' ' + 'Humidity: ' + formated_humidity + ' ' + 'Time: ' + current_time + ' Sensor: Connected'  
                 self.statusLineEdit.setText(_translate("MainWindow",status_line))
