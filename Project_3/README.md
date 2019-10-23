@@ -64,4 +64,6 @@
     A lot of time was spent to figure out how to use the AWS services.
     A lot of online material had to be referred beyond the documentation that was provided.
     The HTML-SQS interface via HTTP took more time than expected.
+    While populating the table on the HTML page, use of global variable in a function was giving unexpected results. After referring to several websites, that issue was fixed. By that, we understood the scoping of variables in javascript.
+    
     
