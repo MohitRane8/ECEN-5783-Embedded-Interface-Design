@@ -1,0 +1,418 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" href="style.css">
+		<title>Temperature & Humidity Monitoring System</title>
+		<meta charset="utf-8" />
+		<style type="text/css">
+
+	<!--		body {
+				text-align: center;
+				min-width: 500px;
+			} -->
+		</style>
+		<script src="http://code.jquery.com/jquery.min.js"></script>
+		<script>
+			
+			var start_time;
+			var end_time;
+			var difference;
+			var temp_flag = 0;	//Celsius
+			var img_flag = 0;
+			var rmv_child_flag = 0;
+			
+			// log function
+			log = function(data){
+				$("div#terminal").prepend("</br>" +data);
+				console.log(data);
+			};
+	
+			$(document).ready(function () {
+				$("div#message_details").hide()
+				
+				// nodejs websocket
+				const wsjs = new WebSocket('ws://128.138.189.73:9898/');
+
+				var ws;
+
+				$("#open").click(function(evt) {
+					evt.preventDefault();
+			
+					var host = $("#host").val();
+					var port = $("#port").val();
+					var uri = $("#uri").val();
+				
+					
+					// create websocket instance
+					ws = new WebSocket("ws://" + host + ":" + port + uri);
+					
+					// Handle incoming websocket message callback
+					ws.onmessage = function(evt) {
+						if (img_flag == 0) {
+							console.log('evt data: ' + evt.data);
+							var recv_msg = JSON.parse(evt.data);
+							
+							//Calculate End Time
+							var end_time = performance.now();
+							
+							//Calculate Length of received data
+							var length_of_data = Object.keys(recv_msg).length;
+							
+							console.log(length_of_data);		
+							
+							if (length_of_data == 2)
+							{
+								var temp;
+								console.log(recv_msg.temp);
+								console.log(recv_msg.hum);
+								if(((recv_msg.temp == null) && (recv_msg.hum == null)) || ((recv_msg.temp == -1) && (recv_msg.hum == -1)))
+								{
+									$("#Output_Temperature").val("Sensor Disconnected");
+									$("#Output_Humidity").val("Sensor Disconnected");
+								}
+								else
+								{
+									// Display in Celsius
+									if(temp_flag == 0)
+									{
+										var temp = recv_msg.temp.toFixed(2);
+									}
+									else if(temp_flag == 1)
+									{
+										var temp = ((recv_msg.temp.toFixed(2))*1.8 + 32)
+									}
+								
+									$("#Output_Temperature").val(temp);
+									$("#Output_Humidity").val(recv_msg.hum.toFixed(2));
+								
+								}
+							}
+							else if (length_of_data == 10)
+							{
+								
+								var i;
+								for(i=0;i<length_of_data;i++)
+								{
+									var newRow = tornado_table.insertRow(tornado_table.length);
+								
+									for(var j=0; j <1  ; j++)
+									{
+										var cell = newRow.insertCell(j);
+										cell.innerHTML = recv_msg[i].toFixed(2);							
+									}
+								}
+								
+								//Tabulate Start,End and Difference time for tornado query
+								var newRow = tornado_timestamp.insertRow(tornado_timestamp.length);
+								var cell = newRow.insertCell(0);
+								cell.innerHTML = start_time.toFixed(2);
+								cell = newRow.insertCell(1);
+								cell.innerHTML = end_time.toFixed(2);
+								cell = newRow.insertCell(2);
+								difference = end_time - start_time;
+								cell.innerHTML = difference.toFixed(2) ;
+
+							}
+						}
+						else if (img_flag == 1) {
+							var image = new Image();
+							image.src = 'data:image/png;base64,' + evt.data;
+							/*
+							if (rmv_child_flag != 0) {
+								//var img = document.getElementById(image);
+								document.body.removeChild(image);
+							}
+							rmv_child_flag = 1;*/
+							document.body.appendChild(image);
+							img_flag = 0;
+						}
+					};
+			
+					// Close Websocket callback
+					ws.onclose = function(evt) {
+						log("***Connection Closed***");
+						alert("Connection close");
+						$("#host").css("background", "#ff0000"); 
+						$("#port").css("background", "#ff0000"); 
+						$("#uri").css("background",  "#ff0000");
+						$("div#message_details").empty();
+					};
+			
+					// Open Websocket callback
+					ws.onopen = function(evt) { 
+						$("#host").css("background", "#00ff00"); 
+						$("#port").css("background", "#00ff00"); 
+						$("#uri").css("background", "#00ff00");
+						$("div#message_details").show();
+						
+						log("***Connection Opened***");
+					};
+				});
+
+				// Send websocket message function
+				$("#send").click(function(evt) {
+					log("Sending Message: "+$("#message").val());
+					ws.send($("#message").val());
+				});
+			
+				// Get latest temperature
+				$("#Get_Latest_Values").click(function(evt) {
+					ws.send("Temperature");
+				}); 
+				
+				// Get latest temperature
+				$("#Celsius").click(function(evt) {
+					if(temp_flag == 0)
+					{
+						$("#Output_C_F").val("F");
+						temp_flag = 1;
+					}
+					else if(temp_flag == 1)
+					{
+						$("#Output_C_F").val("C");
+						temp_flag = 0;
+					}
+				}); 
+
+				// Get Temperature Graph
+				$("#Temperature_Graph").click(function(evt) {
+					img_flag = 1;
+					ws.send("Temperature Graph");
+				}); 				
+				
+				// Get Humidity Graph
+				$("#Humidity_Graph").click(function(evt) {
+					img_flag = 1;
+					ws.send("Humidity Graph");
+				}); 	
+				
+			
+				// Get ten latest values
+				$("#Get_Ten_Latest_Values").click(function(evt) {
+					console.log('Get Ten Value Button clicked');
+
+					// get start time of transaction
+					startTime = performance.now();
+					console.log('start time = ' + startTime);
+
+					// Inform server that button is clicked
+					wsjs.send('2');
+					
+					start_time = performance.now();
+					ws.send("Get_Ten_Latest_Values");
+				});
+
+				// -----------------NodeJS and MySQL Script------------------
+				// timing parameters
+				var startTime;
+				var stopTime;
+				var elapsedTime;
+
+				wsjs.onopen = function() {
+					console.log('WebSocket Client Connected');
+					wsjs.send('Hi this is web client.');
+				};
+
+				wsjs.onmessage = function(e) {
+					console.log("Received: '" + e.data + "'");
+
+					// split string containing array of values separated by comma
+					var arr = e.data.split(",");
+					console.log(arr);
+					// console.log(arr.length);
+
+					// get timing parameters
+					if (arr.length == 10) {
+						// get stop time of transaction
+						stopTime = performance.now();
+						console.log('stop time = ' + stopTime);
+						
+						// total transaction time
+						elapsedTime = stopTime - startTime;
+						console.log('elapsed time = ' + elapsedTime);
+						
+						var i;
+						for(i=0;i<arr.length;i++)
+						{
+							var newRow = nodejs_table.insertRow(nodejs_table.length);
+							for(var j=0; j <1  ; j++)
+							{
+								var cell = newRow.insertCell(j);
+								cell.innerHTML = arr[i];							
+							}
+						}
+						
+						//Tabulate Start,End and Difference time for nodejs query
+						var newRow = nodejs_timestamp.insertRow(nodejs_timestamp.length);
+						var cell = newRow.insertCell(0);
+						cell.innerHTML = startTime.toFixed(2);
+						cell = newRow.insertCell(1);
+						cell.innerHTML = stopTime.toFixed(2);
+						cell = newRow.insertCell(2);
+						cell.innerHTML = elapsedTime.toFixed(2);
+					}
+					
+					else if (arr.length == 2) {
+						console.log('Temperature: ' + arr[0]);
+						var nodejs_temp;
+						if(temp_flag == 0)
+						{
+							nodejs_temp = arr[0];
+						}
+						else if(temp_flag == 1)
+						{
+							nodejs_temp = (((arr[0])*(1.8)) + 32);
+						}
+							
+						$("#Output_NodeJS_Temperature").val(nodejs_temp);
+						console.log('Humidity: ' + arr[1]);
+						$("#Output_NodeJS_Humidity").val(arr[1]);
+					}
+				};
+
+				// Request data from server on button click
+				$("#Get_Latest_Values_for_NodeJS").click(function(evt) {
+					console.log('Get Latest Value Button clicked');
+
+					// Inform server that button is clicked
+					wsjs.send('1');
+				});
+
+				// Request data from server on button click
+				$("#Get_Ten_Latest_Values_for_NodeJS").click(function(evt) {
+					console.log('Get Ten Value Button clicked');
+
+					// get start time of transaction
+					startTime = performance.now();
+					console.log('start time = ' + startTime);
+
+					// Inform server that button is clicked
+					wsjs.send('2');
+					
+					start_time = performance.now();
+					ws.send("Get_Ten_Latest_Values");
+				});
+			});	
+		</script>
+
+</head>
+	
+	<body>
+		<h1>Temperature and Humidity Monitoring System</h1>
+		<div id="connection_details">
+			<label for="host">host:</label>
+			<input type="text" id="host" value="128.138.189.73" style="background:#ff0000;"/><br />
+			<label for="port">port:</label>
+			<input type="text" id="port" value="8888" style="background:#ff0000;"/><br />
+			<label for="uri">uri:</label>
+			<input type="text" id="uri" value="/ws" style="background:#ff0000;"/><br />
+			<input type="submit" id="open" value="open" />
+		</div>
+		
+	<div id="message_details">
+		</br></br>
+		<label for="message">message:</label>
+		<input type="text" id="message" value="Hello World!"/><br />
+		<input type="submit" id="send" value="send" />
+	</div>
+
+	<!--Label for Tornado Temperature-->
+	<label for="Temperature" id="Label_Temperature" style="float: left">Tornado Temperature: </label>
+	<!--Label for NodeJS Temperature-->
+	<label for="NodeJS_Temperature" id="Label_NodeJS_Temperature" style="float: right">NodeJS Temperature: </label>
+	<!--Output for Tornado Temperature-->
+	<output type="text" id="Output_Temperature" style="float: left"></output></br>
+	<!--Output for NodeJS Temperature-->
+	<output type="text" id="Output_NodeJS_Temperature" style="float: right"></output>
+
+	<!--Label for Tornado Humidity -->
+	<label for="Humidity" id="Label_Humidity" style="float: left">Tornado Humidity: </label>
+	<!--Label for NodeJS Humidity -->
+	<label for="NodeJS_Humidity" id="Label_NodeJS_Humidity" style="float: right">NodeJS Humidity: </label>
+	<!--Output for Tornado Humidity-->
+	<output type="text" id="Output_Humidity" style="float: left"></output></br>
+	<!--Output for NodeJS Humidity-->
+	<output type="text" id="Output_NodeJS_Humidity" style="float: right"></output></br>
+
+	<!--Button For  latest values -->
+	<input type="submit" id="Get_Latest_Values" value="Get Latest Values" style="float: left" /> </input>
+	<input type="submit" id="Get_Latest_Values_for_NodeJS" value="Get Latest Values" style="float: right" /> </input>
+	</br>
+	</br>
+	<!--Button for last ten latest Values  -->
+	<input type="submit" id="Get_Ten_Latest_Values" value="Get Ten Latest Values" style="float: left" /> </input>
+	<input type="submit" id="Get_Ten_Latest_Values_for_NodeJS" value="Get Ten Latest Values" style="float: right" /> </input>
+	
+	<!--Button for Celsius/Fahrenheit change -->
+	<input type="submit" id="Celsius" value="Celsius/Fahrenheit"/> </input>
+	<!--Output for Cel/Fah -->
+	<output type="text" id="Output_C_F" ></output></br>
+	
+	<!--Button for Temperature Graph -->
+	<input type="submit" id="Temperature_Graph" value="Temperature Graph"/> </input>
+	<!--Button for Humidity Graph -->
+	<input type="submit" id="Humidity_Graph" value="Humidity Graph"/> </input>
+
+
+</br></br>
+
+
+	
+
+	
+
+
+
+<div>
+	<table id="tornado_table" border="1" style="float:left">
+	<caption>Tornado</caption>
+	<tr>
+		<th>Humidity</th>
+	</tr>
+	</table>
+	
+	<table id="tornado_timestamp" border="1" style="float:left">
+	<caption>Time Analysis</caption>
+	<tr>
+		<th>Start</th>
+		<th>End</th>
+		<th>Difference</th>
+	</tr>
+	</table>
+
+	
+	<table id="nodejs_timestamp" border="1" style="float:right">
+	<caption>Time Analysis</caption>
+	<tr>
+		<th>Start</th>
+		<th>End</th>
+		<th>Difference</th>
+	</tr>
+	</table>
+	
+	<table id="nodejs_table" border="1" align="right" style="float: right">
+	<caption>NodeJS</caption>
+	<tr>
+		<th>Humidity</th>
+	</tr>
+	</table>
+	
+
+</div>
+	
+	<script>
+	tornado_table = document.getElementById("tornado_table");
+	</script>
+	
+	
+	<script>
+	nodejs_table = document.getElementById("nodejs_table");
+	</script>
+	
+		
+	</script>
+	
+		<div id="terminal">			
+		</div>
+		</body>
+</html>
