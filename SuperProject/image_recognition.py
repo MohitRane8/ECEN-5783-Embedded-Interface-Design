@@ -9,10 +9,6 @@
 import boto3
 from picamera import PiCamera
 
-aws_access_key_id=ASIATHTWVR4QSES7IZAC
-aws_secret_access_key=0plmlj7pgRkJwJBvCgMQsfz0kgUb3rjP5bc7W3mn
-aws_session_token=FwoGZXIvYXdzELr//////////wEaDLGFQrL2R/r2oR/MyyLFAWDFKLzzMPl5BtRczBLD6UZ87HjRh/iFgYaoyN4tSsjMYZMlwlwM8gv1EYzT4xKe4f6DKNNL3c3PNLhePzamYzMtj+xLgeGoQhlXFx0osS/NALr+/Wc5liiPiRUxHB0/HvGk+PT7IcKzkyEPEXMhpvHPqqurqcQi9sNZZmMTTQIdTzz98b4e8bjnD54iuLYEKbUq2QqRwBGazcikOzE5uorzoToC1STHDVfUWkxXn3G3hyJ4EzFF0KCLfZOxn3iZ4CWHMyCQKP//0+4FMi3oWudpNqkRntmqL+6EE8ESy54dppywYznbIyzQn2I3g4PI69qFVUd9GJseuP4=
-
 access_key_id     = 'ASIATHTWVR4QSES7IZAC' 
 secret_access_key = '0plmlj7pgRkJwJBvCgMQsfz0kgUb3rjP5bc7W3mn'
 session_token     = 'FwoGZXIvYXdzELr//////////wEaDLGFQrL2R/r2oR/MyyLFAWDFKLzzMPl5BtRczBLD6UZ87HjRh/iFgYaoyN4tSsjMYZMlwlwM8gv1EYzT4xKe4f6DKNNL3c3PNLhePzamYzMtj+xLgeGoQhlXFx0osS/NALr+/Wc5liiPiRUxHB0/HvGk+PT7IcKzkyEPEXMhpvHPqqurqcQi9sNZZmMTTQIdTzz98b4e8bjnD54iuLYEKbUq2QqRwBGazcikOzE5uorzoToC1STHDVfUWkxXn3G3hyJ4EzFF0KCLfZOxn3iZ4CWHMyCQKP//0+4FMi3oWudpNqkRntmqL+6EE8ESy54dppywYznbIyzQn2I3g4PI69qFVUd9GJseuP4='
@@ -20,7 +16,7 @@ session_token     = 'FwoGZXIvYXdzELr//////////wEaDLGFQrL2R/r2oR/MyyLFAWDFKLzzMPl
 camera = PiCamera()
 camera.capture('/home/pi/Documents/ECEN-5783-Embedded-Interface-Design/SuperProject/test_image.jpg')
 
-photo = 'test_image.jpg'
+image = 'test_image.jpg'
 
 
 s3 = boto3.resource('s3',
@@ -40,9 +36,9 @@ client=boto3.client('rekognition',
 					aws_session_token=session_token)
 
 
-response = client.detect_labels(Image={'S3Object':{'Bucket':'omeidsuperproject','Name':photo}},MaxLabels=10)
+response = client.detect_labels(Image={'S3Object':{'Bucket':'omeidsuperproject','Name':image}},MaxLabels=10)
 
-print('Detected labels for ' + photo) 
+print('Detected labels for ' + image) 
 print()   
 for label in response['Labels']:
 	print ("Label: " + label['Name'])
