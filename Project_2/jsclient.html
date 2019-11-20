@@ -61,7 +61,7 @@ tenHumBtn.onclick = function(e) {
     console.log('start time = ' + startTime);
 
     // Inform server that button is clicked
-    wsjs.send('2');
+    ws.send('2');
 
     return false;
 };
