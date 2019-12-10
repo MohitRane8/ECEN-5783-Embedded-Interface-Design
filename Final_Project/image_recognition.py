@@ -1,25 +1,27 @@
 import boto3
+import os
+import sys
 from picamera import PiCamera
+from boto3 import Session
+from botocore.exceptions import BotoCoreError, ClientError
+from contextlib import closing
+import subprocess
+from tempfile import gettempdir
 
 
-access_key_id     = 'ASIATHTWVR4Q5L3PUREU'
-secret_access_key = '76lHzTwE9/1pk9d/fKkIt6ZSE5BOEaHhWYitwWCa'
-session_token     = 'FwoGZXIvYXdzEJ3//////////wEaDGiU8TFdxneDyXGTuyLFAa35awzcVHy1YT/9bm9w6Vq4WkBCDu/rakUQZFtCRHqzJO3goErVMosHbgfRurXclP8+VH/wd28Iuwbylg+TzoK20JId4HE/mWRd2ofxd5iOJiq8jfg2spXn0t2j22dXYs9ZxjNJvYHqz7IxX7RZJTNe3iDtGY9Kw8S8SOL5XPJ+LHMWSV7ASHTBSFI/vzehkNkic50/pm7jovn2rCr0ZjgONc9P8OJCVpbtVar8fGmo/4nulmWzJl94TMjXGka3XIunM+JpKLn5ve8FMi3Jpm2DB21wN1Ej8BKbefmeosyNDSS5o4UFfzgscTEdjSwu6jkh0qQZSjqwbZY='
+access_key_id     = 'ASIATHTWVR4Q3MPK6YGU'
+secret_access_key = '9+Ot1LToufjHaMl3XCSlimLUqJcob3/ZZQCzXcvl'
+session_token     = 'FwoGZXIvYXdzEJ7//////////wEaDOpdDUGYqOEdWqH7cyLFAaiR5Q77H5C/qRAmKZjgSivaP/cMxKIjItCfNxnyn/4CJFa+cQB3UbUYeCFJ9+xPC/Ak+/hgOm1bqUtvnwtOwamct3xtHeHIfRXXlFNRb4v8fxCDFyvj5IKbBmtlvfFHy4kuThf/G28RVHmHjcj5bC72yzE9uxYBplLIaA+3gzkC7zU3aI3IHwwHRifzU/enH/8U8TqMvcVAbH+7ydIMpYaFTsLT986Y7N3sNj1m03oqlL5NZFMCbP8xdjjNI0mYW84UnDAqKJuUvu8FMi0VxTHKNDB4CEeFXL09sdEZW5UrMrHqhehGu1M9mDFkiZsEz/pFNaDWtD11sXI='
+
+session = boto3.Session(region_name='us-east-1',
+						aws_access_key_id=access_key_id,
+						aws_secret_access_key=secret_access_key,
+						aws_session_token=session_token)
+polly = session.client("polly",region_name='us-east-1')
 
 
 def image_capture():
 	camera.capture('image.jpg')
-
-
-#def create_s3_bucket():
-	#Create bucket only once
-	#s3.create_bucket(Bucket = 'omeidsuperproject')
-	
-	#s3 = boto3.resource('s3',
-	#				region_name='us-east-1',
-	#				aws_access_key_id=access_key_id,
-	#				aws_secret_access_key=secret_access_key,
-	#				aws_session_token=session_token)
 
 
 def upload_image_to_s3():
@@ -51,12 +53,19 @@ def extract_labels():
 		if int(label['Confidence']) > 90:
 			return label['Name']
 					
-					
-					
-					
+def text_to_speech_conversion(text):
+	# Request speech synthesis
+	response = polly.synthesize_speech(Text=text, OutputFormat="mp3",VoiceId="Joanna")
+	speech_file = open('speech.mp3', 'wb')
+	speech_file.write(response['AudioStream'].read())
+	speech_file.close()
+	subprocess.call(['xdg-open', 'speech.mp3'])
+
+
+				
 
 camera = PiCamera()
 image_capture()
-#create_s3_bucket()
 upload_image_to_s3()
-extract_labels()
+obj_detected = extract_labels()
+text_to_speech_conversion(obj_detected + 'zzzzzzz')
