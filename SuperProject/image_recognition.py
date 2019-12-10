@@ -9,9 +9,16 @@
 import boto3
 from picamera import PiCamera
 
-access_key_id     = 'ASIATHTWVR4QSES7IZAC' 
-secret_access_key = '0plmlj7pgRkJwJBvCgMQsfz0kgUb3rjP5bc7W3mn'
-session_token     = 'FwoGZXIvYXdzELr//////////wEaDLGFQrL2R/r2oR/MyyLFAWDFKLzzMPl5BtRczBLD6UZ87HjRh/iFgYaoyN4tSsjMYZMlwlwM8gv1EYzT4xKe4f6DKNNL3c3PNLhePzamYzMtj+xLgeGoQhlXFx0osS/NALr+/Wc5liiPiRUxHB0/HvGk+PT7IcKzkyEPEXMhpvHPqqurqcQi9sNZZmMTTQIdTzz98b4e8bjnD54iuLYEKbUq2QqRwBGazcikOzE5uorzoToC1STHDVfUWkxXn3G3hyJ4EzFF0KCLfZOxn3iZ4CWHMyCQKP//0+4FMi3oWudpNqkRntmqL+6EE8ESy54dppywYznbIyzQn2I3g4PI69qFVUd9GJseuP4='
+
+#[default]
+#aws_access_key_id=ASIATHTWVR4QQSJ5XZ4A
+#aws_secret_access_key=+DOANvLXcjDiR05Vby1XhkMtsyybcNUi1UM684bF
+#aws_session_token=FwoGZXIvYXdzEMn//////////wEaDP0QO350NAYd9xITcSLFAeQj/sSAHjtuN6LzAu3kWQZykBMotNtM1wAVFBUe98Bd0mvXo4AV+6dDwxeOFYQe/wu3+TWv+6h48HuA9PShwg7WbQGJMQhJGV2Ib5zxoBHaFLbVsYHVDIoCokgxY4+8Reoie5issUD5ESMJ6BB5afI8eGkLgmwSWpQ1fbrZXUjmFjmErJ985/NgAbo2XY2rgcYEq3hcHbKFFUCS4YyKd0z/Oe3Bp3ThayfSDbCvLwX6/lFko8stDvy0spQTUj0FUGmyQnvMKISh1+4FMi3mEngVFPKPtitqbPwK51ON6PTCPaFAFtnvo4tl5gDHvhRrjwnlvkaoW4Y0qy0=
+
+
+access_key_id     = 'ASIATHTWVR4QQSJ5XZ4A' 
+secret_access_key = '+DOANvLXcjDiR05Vby1XhkMtsyybcNUi1UM684bF'
+session_token     = 'FwoGZXIvYXdzEMn//////////wEaDP0QO350NAYd9xITcSLFAeQj/sSAHjtuN6LzAu3kWQZykBMotNtM1wAVFBUe98Bd0mvXo4AV+6dDwxeOFYQe/wu3+TWv+6h48HuA9PShwg7WbQGJMQhJGV2Ib5zxoBHaFLbVsYHVDIoCokgxY4+8Reoie5issUD5ESMJ6BB5afI8eGkLgmwSWpQ1fbrZXUjmFjmErJ985/NgAbo2XY2rgcYEq3hcHbKFFUCS4YyKd0z/Oe3Bp3ThayfSDbCvLwX6/lFko8stDvy0spQTUj0FUGmyQnvMKISh1+4FMi3mEngVFPKPtitqbPwK51ON6PTCPaFAFtnvo4tl5gDHvhRrjwnlvkaoW4Y0qy0='
 
 camera = PiCamera()
 camera.capture('/home/pi/Documents/ECEN-5783-Embedded-Interface-Design/SuperProject/test_image.jpg')
