@@ -3,16 +3,20 @@ import boto3
 import wave
 
 
-access_key_id='ASIATHTWVR4QZ5PC7Y5C'
-secret_access_key='2Dn4ajXWKfyogg7RigqD0lXYYvR8Zxuv+v509jqY'
-session_token='FwoGZXIvYXdzEKr//////////wEaDLq4ExNRDRYmKevldyLFAcF9QiQh/QqTXdWIQewrSy7smyQ47ZwDWnJ6Mis30+saLGmI8T+Nhk9s/4fAUTybywTZmZ0TLvREvH9NdgmjDbQhY8zk5zoIAdQYqPM9luDeFvilgbKtag6YShCB+nCymHOnuRbvv8HO0icSiqTPgs2819LUKznCjjveKF5cQRCLsmI04hlO3g6/LcrvpHf+qcYL/xvz2fh37byXzeMcCCSTzottOZ78DpheP+F3s2X0q1sP+8lb4OiG4WtsQt7JBYWPo9e4KMzrwO8FMi1j3/W3asfBuZYbv8MP2rKuEQLrMfamtHhEd4bvdj7G7R/FJzbej5RbQuYoNZ8='
+
+
+
+
+access_key_id='ASIATHTWVR4QTCDBMSM5'
+secret_access_key='PnlfKlsKEOmIHijx6eqiJ4V8FwaUJXCZMNpf7ZhX'
+session_token='FwoGZXIvYXdzEK7//////////wEaDP0M+cyNDlCifpNvpyLFARGl7BALeRyLvaVydzlvm9Toh3DzvYG0e18yuaR87vXOb7C3vzfofqgEG+IiyZ9jGo6+tXOfV3rDxUhF1zBpxBzwnKTUnvYmr5SyFZO3rQwKmyE9Q4milKN902hTgPGEPOJ2IwljI6ES4ADpBJLDGwyrd6cf2yc0V+9ATCzbEn8VoO7JU5ANxXuPZ4P3ueJ2OH+IgYkPtF0Xv8jn5ut35u5zPxdhQvgTGAX6K8MQzkRLIht0EPMGcIGLgazsAJfVmugLsF+tKL7kwe8FMi070r9Oh5x+fJUVeyRaqS/eYheKJvd7edC0EWe0epqQuowRDdU9leGH4rCq3/o='
 
 
 
 form_1 = pyaudio.paInt16 # 16-bit resolution
 chans = 1 # 1 channel
 samp_rate = 48000 # 48kHz sampling rate
-chunk = 512 # 2^12 samples for buffer
+chunk = 2 # 2 samples for buffer
 record_secs = 3 # seconds to record
 dev_index = 2 # device index found by p.get_device_info_by_index(ii)
 wav_output_filename = 'command.wav' # name of .wav file
@@ -29,8 +33,8 @@ def record():
 						
 	# loop through stream and append audio chunks to frame array
 	for ii in range(0,int((samp_rate/chunk)*record_secs)):
-		data = stream.read(chunk)
-		if ii % 6 == 0:
+		data = stream.read(chunk,exception_on_overflow = False)
+		if ii % 3 == 0:
 			frames.append(data)
 		
 	print("Finished Recording!")
@@ -45,7 +49,7 @@ def save_audio():
 	wavefile = wave.open(wav_output_filename,'wb')
 	wavefile.setnchannels(chans)
 	wavefile.setsampwidth(audio.get_sample_size(form_1))
-	wavefile.setframerate(samp_rate)
+	wavefile.setframerate(16000)
 	wavefile.writeframes(b''.join(frames))
 	wavefile.close()
 	
@@ -59,15 +63,16 @@ def speech_to_text_conversion():
 						aws_session_token=session_token)
 
 	wavefile = wave.open(wav_output_filename)
-						#lexruntimeservice_
+
 	text_response = aws_lex_client.post_content(botName='eid_test',\
 														botAlias='stt',\
 														userId='om',\
-														contentType= "audio/lpcm; sample-rate=8000; sample-size-bits=16; channel-count=1; is-big-endian=false",\
+														contentType= "audio/l16; rate=16000; channels=1",\
 														accept='text/plain; charset=utf-8',\
-														inputStream=wavefile.readframes(48172))
+														inputStream=wavefile.readframes(96044))
 														
 	print("Text = ",text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message'])
+	#print("Text = ",text_response)
 
 
 audio = pyaudio.PyAudio() # create pyaudio instantiation

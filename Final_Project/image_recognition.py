@@ -10,9 +10,9 @@ import subprocess
 from tempfile import gettempdir
 
 
-access_key_id     = 'ASIATHTWVR4Q3MPK6YGU'
-secret_access_key = '9+Ot1LToufjHaMl3XCSlimLUqJcob3/ZZQCzXcvl'
-session_token     = 'FwoGZXIvYXdzEJ7//////////wEaDOpdDUGYqOEdWqH7cyLFAaiR5Q77H5C/qRAmKZjgSivaP/cMxKIjItCfNxnyn/4CJFa+cQB3UbUYeCFJ9+xPC/Ak+/hgOm1bqUtvnwtOwamct3xtHeHIfRXXlFNRb4v8fxCDFyvj5IKbBmtlvfFHy4kuThf/G28RVHmHjcj5bC72yzE9uxYBplLIaA+3gzkC7zU3aI3IHwwHRifzU/enH/8U8TqMvcVAbH+7ydIMpYaFTsLT986Y7N3sNj1m03oqlL5NZFMCbP8xdjjNI0mYW84UnDAqKJuUvu8FMi0VxTHKNDB4CEeFXL09sdEZW5UrMrHqhehGu1M9mDFkiZsEz/pFNaDWtD11sXI='
+access_key_id='ASIATHTWVR4QTCDBMSM5'
+secret_access_key='PnlfKlsKEOmIHijx6eqiJ4V8FwaUJXCZMNpf7ZhX'
+session_token='FwoGZXIvYXdzEK7//////////wEaDP0M+cyNDlCifpNvpyLFARGl7BALeRyLvaVydzlvm9Toh3DzvYG0e18yuaR87vXOb7C3vzfofqgEG+IiyZ9jGo6+tXOfV3rDxUhF1zBpxBzwnKTUnvYmr5SyFZO3rQwKmyE9Q4milKN902hTgPGEPOJ2IwljI6ES4ADpBJLDGwyrd6cf2yc0V+9ATCzbEn8VoO7JU5ANxXuPZ4P3ueJ2OH+IgYkPtF0Xv8jn5ut35u5zPxdhQvgTGAX6K8MQzkRLIht0EPMGcIGLgazsAJfVmugLsF+tKL7kwe8FMi070r9Oh5x+fJUVeyRaqS/eYheKJvd7edC0EWe0epqQuowRDdU9leGH4rCq3/o='
 
 session = boto3.Session(region_name='us-east-1',
 						aws_access_key_id=access_key_id,
