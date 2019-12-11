@@ -3,14 +3,9 @@ import boto3
 import wave
 
 
-
-
-
-
-access_key_id='ASIATHTWVR4QTCDBMSM5'
-secret_access_key='PnlfKlsKEOmIHijx6eqiJ4V8FwaUJXCZMNpf7ZhX'
-session_token='FwoGZXIvYXdzEK7//////////wEaDP0M+cyNDlCifpNvpyLFARGl7BALeRyLvaVydzlvm9Toh3DzvYG0e18yuaR87vXOb7C3vzfofqgEG+IiyZ9jGo6+tXOfV3rDxUhF1zBpxBzwnKTUnvYmr5SyFZO3rQwKmyE9Q4milKN902hTgPGEPOJ2IwljI6ES4ADpBJLDGwyrd6cf2yc0V+9ATCzbEn8VoO7JU5ANxXuPZ4P3ueJ2OH+IgYkPtF0Xv8jn5ut35u5zPxdhQvgTGAX6K8MQzkRLIht0EPMGcIGLgazsAJfVmugLsF+tKL7kwe8FMi070r9Oh5x+fJUVeyRaqS/eYheKJvd7edC0EWe0epqQuowRDdU9leGH4rCq3/o='
-
+access_key_id='ASIATHTWVR4Q2RXOSJNV'
+secret_access_key='Nl5ugAuRpXcqCweikfy3J32/VkQ7oni9A6TiFnzx'
+session_token='FwoGZXIvYXdzEK///////////wEaDAWa+5DE1Hu/YBAlPyLFAV/QgBKm6iQy2pVX1FnjlvS0D5L0nJIu4aubV2NdIBE6bl3q5VMkUjK5ZRzJemJ1jSn2syu3Ojyxnu5JsL9vJgqxeP0swZhsZycbK+7FH+gKONtt3Dq63s44quM9depbG+b/7JC9TVvTdUpI0xmnZavulvxZj6MAM2w1CDhwxPeUdlZ6/d5WRdx/xUj7kAkcmh6FpioaPc2YIl6AUsGbfpvOEyLPyrxijqrmPs7P7eIBGvhM0HNv1WjEYQis2VIh21+GtxgZKLKKwu8FMi19xcgbKzICbC1gEbEhgw2FopNgEYw+necgCIRf0ZcU75+YylsVo3dEVbaMijI='
 
 
 form_1 = pyaudio.paInt16 # 16-bit resolution
@@ -21,6 +16,15 @@ record_secs = 3 # seconds to record
 dev_index = 2 # device index found by p.get_device_info_by_index(ii)
 wav_output_filename = 'command.wav' # name of .wav file
 frames = []
+
+# Create SQS client
+sqs = boto3.client('sqs',\
+					region_name='us-east-1',\
+					aws_access_key_id=access_key_id,\
+					aws_secret_access_key=secret_access_key,\
+					aws_session_token=session_token)
+
+queue_url = 'https://sqs.us-east-1.amazonaws.com/222513434401/my_queue_project_3'
 
 
 def record():
@@ -70,12 +74,14 @@ def speech_to_text_conversion():
 														contentType= "audio/l16; rate=16000; channels=1",\
 														accept='text/plain; charset=utf-8',\
 														inputStream=wavefile.readframes(96044))
-														
+					
+	message_for_queue = text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message']
 	print("Text = ",text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message'])
-	#print("Text = ",text_response)
+	print("Text = ",message_for_queue)
+	response = sqs.send_message(QueueUrl=queue_url,DelaySeconds=10,MessageBody=str(message_for_queue))
 
 
 audio = pyaudio.PyAudio() # create pyaudio instantiation
-record()
-save_audio()
-speech_to_text_conversion()
+#record()
+#save_audio()
+#speech_to_text_conversion()
