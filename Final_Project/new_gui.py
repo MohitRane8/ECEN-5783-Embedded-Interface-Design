@@ -7,8 +7,20 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import dbManager, sys
+import pyqtgraph as pg          #For plotting temperature & humidity graphs on GUI
+import re
 
-class Ui_MainWindow(object):
+correct_cnt = 0
+wrong_cnt = 0
+invalid_cnt = 0
+i_size = 0
+
+class Ui_MainWindow(QtWidgets.QWidget):
+    def __init__(self, database, tableName):
+        self.dbu = dbManager.DatabaseUtility(database, tableName)
+        QtWidgets.QWidget.__init__(self)
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
@@ -56,18 +68,20 @@ class Ui_MainWindow(object):
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(170, 210, 141, 30))
         self.pushButton_3.setObjectName("pushButton_3")
-        MainWindow.setCentralWidget(self.centralwidget)
+        # MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 28))
         self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
+        # MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
+        # MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
+        self.pushButton.clicked.connect(self.get_wand_stats)
+        self.pushButton_2.clicked.connect(self.get_voice_stats)
         self.pushButton_3.clicked.connect(self.show_image)
 
     def retranslateUi(self, MainWindow):
@@ -80,17 +94,78 @@ class Ui_MainWindow(object):
         self.label_3.setText(_translate("MainWindow", "Correct"))
         self.label_4.setText(_translate("MainWindow", "Wrong"))
         self.label_5.setText(_translate("MainWindow", "Last Image Taken"))
-        self.pushButton_3.setText(_translate("MainWindow", "Get Latest Image"))
+        self.pushButton_3.setText(_translate("MainWindow", "Get Latest Image"))    
 
     def show_image(self):
             self.label_6.setPixmap(QtGui.QPixmap("image.jpg")) 
 
+    def get_wand_stats(self):
+            global correct_cnt
+            global wrong_cnt
+            global invalid_cnt
+            global i_size
+
+            data_str = self.dbu.getData()
+            i_size = self.dbu.getNumOfEntries()
+            data_list = []
+            col2 = []
+            col3 = []
+            for i in range(0,(i_size[0][0] - 1)):
+                    data_list.append(re.findall(r'\w+', str(data_str[i]))) 
+                    #print(data_list)
+                    #print(type(data_str))
+                    
+                    #split data
+                    print(data_list[i][0])     # label
+                    #print(data_list[i])       # correct/wrong
+                    #col2.append(data_list[i][1])
+                    
+                    if data_list[i][0] != "invalid_input":
+                            col3.append(data_list[i][2])
+                            print("col3[] " + col3[i])
+                    elif data_list[i][0] == "invalid_input":
+                            col3.append("invalid_input")
+                    
+            for i in range(0,(i_size[0][0] - 1)):
+                    if col3[i] != "invalid_input":
+                            if col3[i] == "correct":
+                                    correct_cnt = correct_cnt + 1
+                            elif col3[i] == "wrong":
+                                    wrong_cnt = wrong_cnt + 1
+                            else:
+                                    invalid_cnt = invalid_cnt + 1
+        
+            print("correct count = " + str(correct_cnt*100/i_size[0][0]))
+            print("wrong count = " + str(wrong_cnt*100/i_size[0][0]))
+            print("invalid count = " + str(100 - ((wrong_cnt + correct_cnt)*100/i_size[0][0])))
+            self.lineEdit.setText(str(round(correct_cnt*100/i_size[0][0],2)))         
+            self.lineEdit_2.setText(str(round(wrong_cnt*100/i_size[0][0],2)))
+    
+    def get_voice_stats(self):
+            global correct_cnt
+            global wrong_cnt
+            global invalid_cnt
+            global i_size
+            
+            self.lineEdit_3.setText(str(round(correct_cnt*100/i_size[0][0],2)))         
+            self.lineEdit_4.setText(str(round(wrong_cnt*100/i_size[0][0],2)))
+            
+            i_size = 0
+            correct_cnt = 0
+            wrong_cnt = 0
+            invalid_cnt = 0
+
+
 if __name__ == "__main__":
-    import sys
+    # setup sql database and table that will be used
+    db = 'final_proj'
+    tableName = 'final'
+
     app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    # MainWindow = QtWidgets.QMainWindow()
+    MainWindow = QtWidgets.QWidget()
+    ui = Ui_MainWindow(db, tableName)
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
+    ui.sysExit()

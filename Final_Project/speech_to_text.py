@@ -3,9 +3,9 @@ import boto3
 import wave
 
 
-access_key_id='ASIATHTWVR4Q2U7MS6O6'
-secret_access_key='+EKXZeuGwq6LDF4yW2Q6/ZM3TJDv55O+2MgZSbFE'
-session_token='FwoGZXIvYXdzELf//////////wEaDIOZZCBYy2aTHoFIpCLFAaT71vt4lMMj+yDkjSAGXtPybTCn5tiSxthOgOXWg1nfW62WSD26LySKaWbH9JagBzlsGMls7obM0nfaG+spy73o2P5wxVEotpK2vvpFs/SZYERHdFm/uRORkdBwGSzA/3fZYEwRclLDEJ2sBepl7mkgNgScXhRzR14pPfvgGnlOIUcCX36FTHFjF481Ggvu5uR0jCqkRS7S/zn+fIXQ/oMYb770gc+wTDycCn2YzJfTfLr1QNcn5Z6tc85rItOyof7hFsYAKObhw+8FMi3g0rxBov+BCBCJJ+xZFrLxZbLlJ7bipVjMSL/ndT6INSHw6P904ggVzx+yquI='
+access_key_id='ASIATHTWVR4QUUQ5T3ZX'
+secret_access_key='kb/dMBxXuv6xghwr82LZng3liAVAzy1Y1kR+gnUp'
+session_token='FwoGZXIvYXdzELr//////////wEaDJH7yKl1e4tEetY4byLFAWkFxnGxrsgwbgW71PtXAgKvVVBPSDJPf9DBnpy/saWlKP4pqn+X8irrafdRTgpCFEzm5AF/P1Xo8Ys8Gis8iBx9hXA+YB2zpUVlTgLRpjJ8khhpmAezM7e6auyWkzjNdxROE/Z6Lk2BC/hRvShYk/QPo6YGyBAJm0L3BYraRYYH2QIh3rHB3KMa2oOZznTeS+67vzOn+BRd2PCbYfjhRgDDa9Lz92x8QdAOWmtGfDmxhDb4OT7lTgOjKtwlWG9wbZnYx8LkKPWxxO8FMi1DSPJwLCuetzGjUpCSUaBz3mmAn/FxXF4O/xi2i5IHVXQyNlkOUgff85q3LRo='
 
 
 form_1 = pyaudio.paInt16 # 16-bit resolution
