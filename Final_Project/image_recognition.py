@@ -9,10 +9,9 @@ from contextlib import closing
 import subprocess
 from tempfile import gettempdir
 
-
-access_key_id='ASIATHTWVR4QZ7QCNLNO'
-secret_access_key='2bbg11e9u0X+uBzDpQpizU/GWMHv8Vz4GeOgVuP4'
-session_token='FwoGZXIvYXdzELT//////////wEaDPZOa/Ct5aR9vjvo+yLFAS20RdhkPTeyc1DIUUSbmHdDrZEkwDgZow297/0AzXBEJSma/HA6iwy6otJCOEM2XPvJ/5H3ItHrwEy8NfSWERez6wGMq+3Q9Yo5sJ5DFMb1SWTBMgz1WgoeM/GrKBx5bOdnsZt9u1Lulj69W9c1eInAM2tTJHaxDVXxpGKaADH+Uif0aZUioViNP6ZRLyg57x5Iaxv6fhwCIOs1dWbo+i241UFhfZ8MG8Z3qtz4onDymWFFVvlKdROFkrvZjzH1qx9Brn0yKNyMw+8FMi2jAq20Yj5iduKlEI+PmkEr6nHeFfwiZHS212HWf9jbfzeXQI3FPXa5NNy8doA='
+access_key_id='ASIATHTWVR4Q2U7MS6O6'
+secret_access_key='+EKXZeuGwq6LDF4yW2Q6/ZM3TJDv55O+2MgZSbFE'
+session_token='FwoGZXIvYXdzELf//////////wEaDIOZZCBYy2aTHoFIpCLFAaT71vt4lMMj+yDkjSAGXtPybTCn5tiSxthOgOXWg1nfW62WSD26LySKaWbH9JagBzlsGMls7obM0nfaG+spy73o2P5wxVEotpK2vvpFs/SZYERHdFm/uRORkdBwGSzA/3fZYEwRclLDEJ2sBepl7mkgNgScXhRzR14pPfvgGnlOIUcCX36FTHFjF481Ggvu5uR0jCqkRS7S/zn+fIXQ/oMYb770gc+wTDycCn2YzJfTfLr1QNcn5Z6tc85rItOyof7hFsYAKObhw+8FMi3g0rxBov+BCBCJJ+xZFrLxZbLlJ7bipVjMSL/ndT6INSHw6P904ggVzx+yquI='
 
 session = boto3.Session(region_name='us-east-1',
 						aws_access_key_id=access_key_id,

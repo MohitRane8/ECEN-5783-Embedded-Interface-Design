@@ -3,9 +3,9 @@ import boto3
 import wave
 
 
-access_key_id='ASIATHTWVR4QZ7OVDB2H'
-secret_access_key='5wOO0aoY2z6nj6MQ9P/glCfaDBxsHEJqrxbt8Adc'
-session_token='FwoGZXIvYXdzELT//////////wEaDL5vGHcKGw7mAfyomCLFAXxhojXaYG0djKkUZqbnSE+yparWbwATXZyp8eKjeQ3GRD0ywxlV6ueRrSGoMFQUiSx3itsTQs3xMROnI92mu8oAGBU2kDz/M6DH/fGQESj2r3PTxvFaBm/iO8PvudiUxVRd2MnMc7Zld3YqclhQSIDMj/3fDLLTkWgyyGlLCST7CNXgNj5dxlJz3/Ck/I6OUQ64Z9uhrjnTeTch8nR6Lzbb8UvRq+vmEDrm9HrPDoAtPYmWCb+/SWBjlJ6ZVRZXtwOBG+sUKOuIw+8FMi3MUK+Kp3rDwxfwpce6SPan6WwHDBpuoL5Ub740n0eOZQPiAHyhVsbPhxIRfVg='
+access_key_id='ASIATHTWVR4Q2U7MS6O6'
+secret_access_key='+EKXZeuGwq6LDF4yW2Q6/ZM3TJDv55O+2MgZSbFE'
+session_token='FwoGZXIvYXdzELf//////////wEaDIOZZCBYy2aTHoFIpCLFAaT71vt4lMMj+yDkjSAGXtPybTCn5tiSxthOgOXWg1nfW62WSD26LySKaWbH9JagBzlsGMls7obM0nfaG+spy73o2P5wxVEotpK2vvpFs/SZYERHdFm/uRORkdBwGSzA/3fZYEwRclLDEJ2sBepl7mkgNgScXhRzR14pPfvgGnlOIUcCX36FTHFjF481Ggvu5uR0jCqkRS7S/zn+fIXQ/oMYb770gc+wTDycCn2YzJfTfLr1QNcn5Z6tc85rItOyof7hFsYAKObhw+8FMi3g0rxBov+BCBCJJ+xZFrLxZbLlJ7bipVjMSL/ndT6INSHw6P904ggVzx+yquI='
 
 
 form_1 = pyaudio.paInt16 # 16-bit resolution
@@ -14,22 +14,31 @@ samp_rate = 48000 # 48kHz sampling rate
 chunk = 2 # 2 samples for buffer
 record_secs = 3 # seconds to record
 dev_index = 2 # device index found by p.get_device_info_by_index(ii)
-wav_output_filename = 'command.wav' # name of .wav file
-frames = []
+#wav_output_filename = 'command.wav' # name of .wav file
+#frames = []
+string = ''
+
+
+aws_lex_client=boto3.client('lex-runtime',\
+						region_name='us-east-1',\
+						aws_access_key_id=access_key_id,\
+						aws_secret_access_key=secret_access_key,\
+						aws_session_token=session_token)
 
 # Create SQS client
-sqs = boto3.client('sqs',\
+"""sqs = boto3.client('sqs',\
 					region_name='us-east-1',\
 					aws_access_key_id=access_key_id,\
 					aws_secret_access_key=secret_access_key,\
 					aws_session_token=session_token)
+"""
 
-queue_url = 'https://sqs.us-east-1.amazonaws.com/222513434401/my_queue_project_3'
+#queue_url = 'https://sqs.us-east-1.amazonaws.com/222513434401/my_queue_project_3'
 
 
-def record():
+def record(wav_output_filename):
 	print("Recording.....")
-	
+	frames = []
 	# create pyaudio stream
 	stream = audio.open(format = form_1,rate = samp_rate,channels = chans, \
 						input_device_index = dev_index,input = True, \
@@ -46,26 +55,27 @@ def record():
 	# stop the stream, close it, and terminate the pyaudio instantiation
 	stream.stop_stream()
 	stream.close()
-	audio.terminate()
-
-
-def save_audio():
 	wavefile = wave.open(wav_output_filename,'wb')
 	wavefile.setnchannels(chans)
 	wavefile.setsampwidth(audio.get_sample_size(form_1))
 	wavefile.setframerate(16000)
 	wavefile.writeframes(b''.join(frames))
 	wavefile.close()
-	
-	
-	
-def speech_to_text_conversion():
-	aws_lex_client=boto3.client('lex-runtime',\
-						region_name='us-east-1',\
-						aws_access_key_id=access_key_id,\
-						aws_secret_access_key=secret_access_key,\
-						aws_session_token=session_token)
 
+
+"""def save_audio(wav_output_filename):
+	print("Filename = " + wav_output_filename)
+	wavefile = wave.open(wav_output_filename,'wb')
+	wavefile.setnchannels(chans)
+	wavefile.setsampwidth(audio.get_sample_size(form_1))
+	wavefile.setframerate(16000)
+	wavefile.writeframes(b''.join(frames))
+	wavefile.close()
+"""
+	
+	
+def speech_to_text_conversion(wav_output_filename):
+	print("Speech to text = " + wav_output_filename)
 	wavefile = wave.open(wav_output_filename)
 
 	text_response = aws_lex_client.post_content(botName='eid_test',\
@@ -78,7 +88,7 @@ def speech_to_text_conversion():
 	message_for_queue = text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message']
 	print("Text = ",text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message'])
 	print("Text = ",message_for_queue)
-	response = sqs.send_message(QueueUrl=queue_url,DelaySeconds=10,MessageBody=str(message_for_queue))
+#	response = sqs.send_message(QueueUrl=queue_url,DelaySeconds=10,MessageBody=str(message_for_queue))
 	return message_for_queue
 
 
