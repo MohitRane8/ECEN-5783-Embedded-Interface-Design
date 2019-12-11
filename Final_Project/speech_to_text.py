@@ -3,9 +3,9 @@ import boto3
 import wave
 
 
-access_key_id='ASIATHTWVR4Q2RXOSJNV'
-secret_access_key='Nl5ugAuRpXcqCweikfy3J32/VkQ7oni9A6TiFnzx'
-session_token='FwoGZXIvYXdzEK///////////wEaDAWa+5DE1Hu/YBAlPyLFAV/QgBKm6iQy2pVX1FnjlvS0D5L0nJIu4aubV2NdIBE6bl3q5VMkUjK5ZRzJemJ1jSn2syu3Ojyxnu5JsL9vJgqxeP0swZhsZycbK+7FH+gKONtt3Dq63s44quM9depbG+b/7JC9TVvTdUpI0xmnZavulvxZj6MAM2w1CDhwxPeUdlZ6/d5WRdx/xUj7kAkcmh6FpioaPc2YIl6AUsGbfpvOEyLPyrxijqrmPs7P7eIBGvhM0HNv1WjEYQis2VIh21+GtxgZKLKKwu8FMi19xcgbKzICbC1gEbEhgw2FopNgEYw+necgCIRf0ZcU75+YylsVo3dEVbaMijI='
+access_key_id='ASIATHTWVR4QZ7OVDB2H'
+secret_access_key='5wOO0aoY2z6nj6MQ9P/glCfaDBxsHEJqrxbt8Adc'
+session_token='FwoGZXIvYXdzELT//////////wEaDL5vGHcKGw7mAfyomCLFAXxhojXaYG0djKkUZqbnSE+yparWbwATXZyp8eKjeQ3GRD0ywxlV6ueRrSGoMFQUiSx3itsTQs3xMROnI92mu8oAGBU2kDz/M6DH/fGQESj2r3PTxvFaBm/iO8PvudiUxVRd2MnMc7Zld3YqclhQSIDMj/3fDLLTkWgyyGlLCST7CNXgNj5dxlJz3/Ck/I6OUQ64Z9uhrjnTeTch8nR6Lzbb8UvRq+vmEDrm9HrPDoAtPYmWCb+/SWBjlJ6ZVRZXtwOBG+sUKOuIw+8FMi3MUK+Kp3rDwxfwpce6SPan6WwHDBpuoL5Ub740n0eOZQPiAHyhVsbPhxIRfVg='
 
 
 form_1 = pyaudio.paInt16 # 16-bit resolution
@@ -79,6 +79,7 @@ def speech_to_text_conversion():
 	print("Text = ",text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message'])
 	print("Text = ",message_for_queue)
 	response = sqs.send_message(QueueUrl=queue_url,DelaySeconds=10,MessageBody=str(message_for_queue))
+	return message_for_queue
 
 
 audio = pyaudio.PyAudio() # create pyaudio instantiation

@@ -9,9 +9,10 @@ from contextlib import closing
 import subprocess
 from tempfile import gettempdir
 
-access_key_id='ASIATHTWVR4Q2RXOSJNV'
-secret_access_key='Nl5ugAuRpXcqCweikfy3J32/VkQ7oni9A6TiFnzx'
-session_token='FwoGZXIvYXdzEK///////////wEaDAWa+5DE1Hu/YBAlPyLFAV/QgBKm6iQy2pVX1FnjlvS0D5L0nJIu4aubV2NdIBE6bl3q5VMkUjK5ZRzJemJ1jSn2syu3Ojyxnu5JsL9vJgqxeP0swZhsZycbK+7FH+gKONtt3Dq63s44quM9depbG+b/7JC9TVvTdUpI0xmnZavulvxZj6MAM2w1CDhwxPeUdlZ6/d5WRdx/xUj7kAkcmh6FpioaPc2YIl6AUsGbfpvOEyLPyrxijqrmPs7P7eIBGvhM0HNv1WjEYQis2VIh21+GtxgZKLKKwu8FMi19xcgbKzICbC1gEbEhgw2FopNgEYw+necgCIRf0ZcU75+YylsVo3dEVbaMijI='
+
+access_key_id='ASIATHTWVR4QZ7QCNLNO'
+secret_access_key='2bbg11e9u0X+uBzDpQpizU/GWMHv8Vz4GeOgVuP4'
+session_token='FwoGZXIvYXdzELT//////////wEaDPZOa/Ct5aR9vjvo+yLFAS20RdhkPTeyc1DIUUSbmHdDrZEkwDgZow297/0AzXBEJSma/HA6iwy6otJCOEM2XPvJ/5H3ItHrwEy8NfSWERez6wGMq+3Q9Yo5sJ5DFMb1SWTBMgz1WgoeM/GrKBx5bOdnsZt9u1Lulj69W9c1eInAM2tTJHaxDVXxpGKaADH+Uif0aZUioViNP6ZRLyg57x5Iaxv6fhwCIOs1dWbo+i241UFhfZ8MG8Z3qtz4onDymWFFVvlKdROFkrvZjzH1qx9Brn0yKNyMw+8FMi2jAq20Yj5iduKlEI+PmkEr6nHeFfwiZHS212HWf9jbfzeXQI3FPXa5NNy8doA='
 
 session = boto3.Session(region_name='us-east-1',
 						aws_access_key_id=access_key_id,
@@ -65,7 +66,7 @@ def text_to_speech_conversion(text):
 				
 
 camera = PiCamera()
-image_capture()
-upload_image_to_s3()
-obj_detected = extract_labels()
-text_to_speech_conversion(obj_detected + 'zzzzzzz')
+#image_capture()
+#upload_image_to_s3()
+#obj_detected = extract_labels()
+#text_to_speech_conversion(obj_detected + 'zzzzzzz')

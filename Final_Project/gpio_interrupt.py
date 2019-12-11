@@ -2,6 +2,7 @@
 # script by Alex Eames https://raspi.tv/  
 # https://raspi.tv/2013/how-to-use-interrupts-with-python-on-the-raspberry-pi-and-rpi-gpio  
 from speech_to_text import *
+from image_recognition import *
 import RPi.GPIO as GPIO  
 
 
@@ -32,7 +33,15 @@ def main():
     print ("whatever was waiting for a button press.")
     record()
     save_audio()
-    speech_to_text_conversion()
+    text = speech_to_text_conversion()
+    print("Interrupt = " + text )
+    if text == "Okay, Capturing Image":
+      image_capture()
+      upload_image_to_s3()
+      obj_detected = extract_labels()
+      text_to_speech_conversion(obj_detected + 'zzzzzzz')
+      print(obj_detected)
+
   except KeyboardInterrupt:  
     GPIO.cleanup()       # clean up GPIO on CTRL+C exit  
 GPIO.cleanup()           # clean up GPIO on normal exit 
