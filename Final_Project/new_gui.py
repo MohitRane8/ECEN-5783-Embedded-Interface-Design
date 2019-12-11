@@ -99,17 +99,20 @@ class Ui_MainWindow(QtWidgets.QWidget):
     def show_image(self):
             self.label_6.setPixmap(QtGui.QPixmap("image.jpg")) 
 
+    # get system statistics from mysql database
     def get_wand_stats(self):
             global correct_cnt
             global wrong_cnt
             global invalid_cnt
             global i_size
 
+            # get data from mysql database
             data_str = self.dbu.getData()
+            # store total number of entries in database
             i_size = self.dbu.getNumOfEntries()
-            data_list = []
-            col2 = []
-            col3 = []
+            data_list = []      # stores data string from database in array
+            col2 = []           # stores label extracted fron data string
+            col3 = []           # stores correct/wrong value extracted from data string
             for i in range(0,(i_size[0][0] - 1)):
                     data_list.append(re.findall(r'\w+', str(data_str[i]))) 
                     #print(data_list)
@@ -141,6 +144,7 @@ class Ui_MainWindow(QtWidgets.QWidget):
             self.lineEdit.setText(str(round(correct_cnt*100/i_size[0][0],2)))         
             self.lineEdit_2.setText(str(round(wrong_cnt*100/i_size[0][0],2)))
     
+    # get voice statistics from mysql database
     def get_voice_stats(self):
             global correct_cnt
             global wrong_cnt

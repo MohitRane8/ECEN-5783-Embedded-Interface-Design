@@ -1,4 +1,8 @@
-/** Author: Mohit Rane **/
+// Author_Name: Mohit Rane
+// Date: 11 December 2019
+// Project Members: Om Raheja & Mohit Rane
+// Embedded Interface Design Final Project
+// Magic Wand
 
 // Reference: https://medium.com/@drwtech/a-node-js-introduction-to-amazon-simple-queue-service-sqs-9c0edf866eca
 
@@ -83,6 +87,7 @@ setInterval(function() {
                         var body = data.Messages[0].Body;
                         console.log(body);
 
+                        // store in database
                         connection.query("INSERT INTO final VALUES ('" + body + "')", function (error, results, fields) {
                             if (error) throw error;
                         });
@@ -101,4 +106,4 @@ setInterval(function() {
             }
         }
     });
-}, 30000);
+}, 10000);

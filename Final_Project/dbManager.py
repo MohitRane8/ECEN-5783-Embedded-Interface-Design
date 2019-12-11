@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
 # Author_Name: Mohit Rane
-#Date: 22 September 2019
+#Date: 11 December 2019
 #Project Members: Om Raheja & Mohit Rane
-#Embedded Interface Design Project 1
-#Temperature and Humidity monitoring system
+#Embedded Interface Design Final Project
+#Magic Wand
 # Referred to Trevor Payne youtube video as a reference for this code
 # https://www.youtube.com/watch?v=2TibG64zLeA
 

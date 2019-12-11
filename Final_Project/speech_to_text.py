@@ -1,44 +1,51 @@
+'''
+@ Author(s)_Name: Om Raheja & Mohit Rane
+@ Date: 11 December 2019
+@ Embedded Interface Design Super Project
+@ The magic Wand
+'''
+
+# Imports
 import pyaudio
 import boto3
 import wave
 
 
-access_key_id='ASIATHTWVR4QUUQ5T3ZX'
-secret_access_key='kb/dMBxXuv6xghwr82LZng3liAVAzy1Y1kR+gnUp'
-session_token='FwoGZXIvYXdzELr//////////wEaDJH7yKl1e4tEetY4byLFAWkFxnGxrsgwbgW71PtXAgKvVVBPSDJPf9DBnpy/saWlKP4pqn+X8irrafdRTgpCFEzm5AF/P1Xo8Ys8Gis8iBx9hXA+YB2zpUVlTgLRpjJ8khhpmAezM7e6auyWkzjNdxROE/Z6Lk2BC/hRvShYk/QPo6YGyBAJm0L3BYraRYYH2QIh3rHB3KMa2oOZznTeS+67vzOn+BRd2PCbYfjhRgDDa9Lz92x8QdAOWmtGfDmxhDb4OT7lTgOjKtwlWG9wbZnYx8LkKPWxxO8FMi1DSPJwLCuetzGjUpCSUaBz3mmAn/FxXF4O/xi2i5IHVXQyNlkOUgff85q3LRo='
+# Credentials required to create clients for services
+access_key_id='ASIATHTWVR4QYPCGCGBQ'
+secret_access_key='fcjBYIA0iKGnz65gW+tdFTFanDpQ7hpX0yZ6ILBR'
+session_token='FwoGZXIvYXdzEL3//////////wEaDFEo24+7pqrl2Q/U3CLFAXVS4m8FOj8tFn9KfDlYJUgIHv8u+fnUdjESo1raJirWU4n3AtWhjuF1YGUuwSkB9gHWash0Vn62yaU2VmTUIIzl0AOBx5gjBElgL0ua7dTEQcwYS2sTO7BjujXYT9JehKqh3WhKlAaoED410cCHcIow6HnMnf9XItQrvJ+NAvDw2N3vt2A1nPKN8TYN27VNkRmv226C0rr+NiqqzNuVYt8zgUKcxsKybNFL699c2KA3LuvRqI+fyY3AHkYhgDih9eUkGPgNKJWHxe8FMi17wG7nvHcMg4epsKIQi2Mm3x2zLX7nYoxUYndNmzOj5JxShxQhFdcXlfa2/Bg='
+
+# Global variables
+form_1 = pyaudio.paInt16 	# 16-bit resolution
+chans = 1 					# 1 channel
+samp_rate = 48000 			# 48kHz sampling rate
+chunk = 2 					# 2 samples for buffer
+record_secs = 3 			# seconds to record
+dev_index = 2 				# device index found by p.get_device_info_by_index(ii)
+string = ''					# string variable to store data to be sent to SQS
 
 
-form_1 = pyaudio.paInt16 # 16-bit resolution
-chans = 1 # 1 channel
-samp_rate = 48000 # 48kHz sampling rate
-chunk = 2 # 2 samples for buffer
-record_secs = 3 # seconds to record
-dev_index = 2 # device index found by p.get_device_info_by_index(ii)
-#wav_output_filename = 'command.wav' # name of .wav file
-#frames = []
-string = ''
-
-
+# Client for Voice to text service [AWS Lex]
 aws_lex_client=boto3.client('lex-runtime',\
 						region_name='us-east-1',\
 						aws_access_key_id=access_key_id,\
 						aws_secret_access_key=secret_access_key,\
 						aws_session_token=session_token)
 
-# Create SQS client
-"""sqs = boto3.client('sqs',\
-					region_name='us-east-1',\
-					aws_access_key_id=access_key_id,\
-					aws_secret_access_key=secret_access_key,\
-					aws_session_token=session_token)
-"""
 
-#queue_url = 'https://sqs.us-east-1.amazonaws.com/222513434401/my_queue_project_3'
+'''
+@ Function Name : record()
+@ Brief         : Opens audio stream, read audio stream and save the audio file
+@ Param in      : wav_output_filename
+@ Return        : None 
 
+'''
 
 def record(wav_output_filename):
 	print("Recording.....")
 	frames = []
+	
 	# create pyaudio stream
 	stream = audio.open(format = form_1,rate = samp_rate,channels = chans, \
 						input_device_index = dev_index,input = True, \
@@ -55,6 +62,8 @@ def record(wav_output_filename):
 	# stop the stream, close it, and terminate the pyaudio instantiation
 	stream.stop_stream()
 	stream.close()
+	
+	# Save the audio file
 	wavefile = wave.open(wav_output_filename,'wb')
 	wavefile.setnchannels(chans)
 	wavefile.setsampwidth(audio.get_sample_size(form_1))
@@ -62,18 +71,16 @@ def record(wav_output_filename):
 	wavefile.writeframes(b''.join(frames))
 	wavefile.close()
 
+	
 
-"""def save_audio(wav_output_filename):
-	print("Filename = " + wav_output_filename)
-	wavefile = wave.open(wav_output_filename,'wb')
-	wavefile.setnchannels(chans)
-	wavefile.setsampwidth(audio.get_sample_size(form_1))
-	wavefile.setframerate(16000)
-	wavefile.writeframes(b''.join(frames))
-	wavefile.close()
-"""
-	
-	
+'''
+@ Function Name : speech_to_text_conversion()
+@ Brief         : Input audio file, use AWS Lex to convert speech to text
+@ Param in      : wav_output_filename
+@ Return        : message_for_queue (Data to be sent to SQS) 
+
+'''
+
 def speech_to_text_conversion(wav_output_filename):
 	print("Speech to text = " + wav_output_filename)
 	wavefile = wave.open(wav_output_filename)
@@ -88,11 +95,7 @@ def speech_to_text_conversion(wav_output_filename):
 	message_for_queue = text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message']
 	print("Text = ",text_response['ResponseMetadata']['HTTPHeaders']['x-amz-lex-message'])
 	print("Text = ",message_for_queue)
-#	response = sqs.send_message(QueueUrl=queue_url,DelaySeconds=10,MessageBody=str(message_for_queue))
 	return message_for_queue
 
 
 audio = pyaudio.PyAudio() # create pyaudio instantiation
-#record()
-#save_audio()
-#speech_to_text_conversion()
