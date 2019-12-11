@@ -24,7 +24,7 @@
     Additional Features of the project include:
     A GPIO trigger to initiate recording of either command or response.
 
-## INSTALLATION INSTRUCTIONS
+## COMPILATION INSTRUCTIONS
     1) Before downloading the Final_Project folder on your system, make sure to have the
        following installed:
        a) Python3
@@ -38,6 +38,17 @@
     6) After all the above steps, the user can interact with the application.
     7) To give command, Connect GPIO 23 of Rpi to GND.
     7) To give response to Rpi, connect GPIO 24 of Rpi to GND. 
+    
+## INSTALLATION INSTRUCTIONS
+    1) Update packages on Raspberry Pi:
+    sudo apt-get update
+    sudo-apt-get-upgrade
+    2) MySQL:
+    sudo apt install mariadb-server
+    3) Pyqt5:
+    sudo apt-get install qt5-default pyqt5-dev pyqt5-dev-tools
+    4) AWS SDK:
+    pip3 install AWSIoTPythonSDK
     
 ## PROJECT CONTRIBUTIONS
     Om Raheja: 
