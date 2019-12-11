@@ -1,3 +1,4 @@
+# References: Text-to-Speech (https://docs.aws.amazon.com/polly/latest/dg/get-started-what-next.html)
 import boto3
 import os
 import sys
